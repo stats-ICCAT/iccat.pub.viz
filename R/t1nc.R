@@ -97,13 +97,14 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
   T1NC_proc_m[ is.na(CATCH) & !is.na(CATCH_PREV) & LOG == 3, CHANGE := "+++"]
   T1NC_proc_m[ is.na(CATCH) & !is.na(CATCH_PREV) & LOG >= 4, CHANGE := "++++"]
 
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & LOG == 0 & YEAR != min(YEAR), CHANGE := "="]
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & LOG == 1 & YEAR != min(YEAR), CHANGE := "+"]
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & LOG == 2 & YEAR != min(YEAR), CHANGE := "++"]
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & LOG == 3 & YEAR != min(YEAR), CHANGE := "+++"]
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & LOG >= 4 & YEAR != min(YEAR), CHANGE := "++++"]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG == 0 & YEAR != min(YEAR), CHANGE := "="]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG == 1 & YEAR != min(YEAR), CHANGE := "+"]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG == 2 & YEAR != min(YEAR), CHANGE := "++"]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG == 3 & YEAR != min(YEAR), CHANGE := "+++"]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG >= 4 & YEAR != min(YEAR), CHANGE := "++++"]
 
-  T1NC_proc_m[!is.na(CATCH) & is.na(CATCH_PREV)  & CATCH == 0, CHANGE := "="]
+  T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & CATCH == 0, CHANGE := "="]
+  T1NC_proc_m[!is.na(CATCH) & !is.na(CATCH_PREV) & CATCH == CATCH_PREV & CATCH != 0, CHANGE := "0"]
 
   T1NC_proc_m[YEAR == min(YEAR) & !is.na(CATCH), CHANGE := "="]
 
@@ -136,7 +137,9 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
                   ifelse(bg_matrix == "++", "orange",
                          ifelse(bg_matrix == "+++", "red",
                                 ifelse(bg_matrix == "++++", "darkred",
-                                       "white")
+                                       ifelse(bg_matrix == "0", "cyan",
+                                              "white")
+                                )
                          )
                   )
            )
