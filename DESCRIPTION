@@ -12,6 +12,7 @@ LazyData: true
 Depends: 
     iccat.pub.aes,
     iccat.pub.data,
+    data.table,
     flextable,
     officer
 RoxygenNote: 7.3.1
