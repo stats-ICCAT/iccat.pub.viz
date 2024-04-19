@@ -20,13 +20,13 @@ DEFAULT_TRENDS_REL_DIFF_LIMITS =
 #' @param colorize_gears TBD
 #' @return TBD
 #' @export
-t1nc.viz.trends = function(t1nc_data,
+t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
                            by_species = TRUE, by_stock = TRUE, by_gear = TRUE,
                            rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
                            colorize_gears = FALSE) {
   sensitivity = min(1, max(0, 1 - sensitivity))
 
-  T1NC_proc_m = t1nc.summarise(t1nc_data, by_species, by_stock, by_gear)$raw
+  T1NC_proc_m = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear)$raw
 
   T1NC_proc_m[, PREV_YEAR := YEAR - 1]
 

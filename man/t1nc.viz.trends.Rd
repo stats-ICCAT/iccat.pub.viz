@@ -6,6 +6,8 @@
 \usage{
 t1nc.viz.trends(
   t1nc_data,
+  year_min = NA,
+  year_max = NA,
   by_species = TRUE,
   by_stock = TRUE,
   by_gear = TRUE,
