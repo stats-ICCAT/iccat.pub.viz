@@ -15,13 +15,14 @@ DEFAULT_TRENDS_REL_DIFF_LIMITS =
 #' @param by_species TBD
 #' @param by_stock TBD
 #' @param by_gear TBD
+#' @param by_catch_type TBD
 #' @param rel_diff_limits TBD
 #' @param sensitivity TBD
 #' @param colorize_gears TBD
 #' @return TBD
 #' @export
 t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
-                           by_species = TRUE, by_stock = TRUE, by_gear = TRUE,
+                           by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
                            rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
                            colorize_gears = FALSE) {
   sensitivity = min(1, max(0, 1 - sensitivity))
@@ -51,13 +52,18 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     grouped_columns = grouped_columns + 1
   }
 
+  if(by_catch_type) {
+    formula_components = append(formula_components, "CATCH_TYPE_CODE")
+    grouped_columns = grouped_columns + 1
+  }
+
   formula = paste0(formula_components, collapse = " + ")
   formula = paste0(formula, " ~ YEAR")
 
   T1NC_proc_m =
     merge(T1NC_proc_m, T1NC_proc_m,
-          by.x = append(formula_components, "PREV_YEAR"), #c("SPECIES_CODE", "PREV_YEAR", "STOCK_CODE", "FLAG_CODE", "GEAR_GROUP_CODE"),
-          by.y = append(formula_components, "YEAR"),      #c("SPECIES_CODE", "YEAR",      "STOCK_CODE", "FLAG_CODE", "GEAR_GROUP_CODE"),
+          by.x = append(formula_components, "PREV_YEAR"),
+          by.y = append(formula_components, "YEAR"),
           all.x = TRUE, allow.cartesian = TRUE)
 
   colnames(T1NC_proc_m)[which(colnames(T1NC_proc_m) == "CATCH.x")] = "CATCH"
@@ -166,10 +172,11 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
 
   to_merge = c()
 
-                 to_merge = append(to_merge, "FLAG_CODE")
-  if(by_species) to_merge = append(to_merge, "SPECIES_CODE")
-  #if(by_stock)   to_merge = append(to_merge, "STOCK_CODE")
-  if(by_gear )   to_merge = append(to_merge, "GEAR_GROUP_CODE")
+                    to_merge = append(to_merge, "FLAG_CODE")
+  if(by_species)    to_merge = append(to_merge, "SPECIES_CODE")
+  #if(by_stock)     to_merge = append(to_merge, "STOCK_CODE")
+  if(by_gear)       to_merge = append(to_merge, "GEAR_GROUP_CODE")
+  #if(by_catch_type) to_merge = append(to_merge, "CATCH_TYPE_CODE")
 
   T1NC_FT =
     flextable(T1NC_proc_m_w) %>%
@@ -177,7 +184,8 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     set_header_labels(values = list(SPECIES_CODE    = "Species",
                                     STOCK_CODE      = "Stock",
                                     FLAG_CODE       = "Flag name",
-                                    GEAR_GROUP_CODE = "Gear group")) %>%
+                                    GEAR_GROUP_CODE = "Gear group",
+                                    CATCH_TYPE_CODE = "Catch type")) %>%
     bold(part = "header") %>%
 
     line_spacing(part = "all", space   = 0) %>%
@@ -196,6 +204,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     valign(j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
     align( j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "header",  align = "center") %>%
     align( j = "STOCK_CODE",                              part = "body",    align = "center") %>%
+    align( j = "CATCH_TYPE_CODE",                         part = "body",    align = "center") %>%
 
     bg    (                                               part = "header", bg    = "grey") %>%
     bg    (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
