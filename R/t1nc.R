@@ -27,7 +27,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
                            colorize_gears = FALSE) {
   sensitivity = min(1, max(0, 1 - sensitivity))
 
-  T1NC_proc_m = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear)$raw
+  T1NC_proc_m = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear, by_catch_type)$raw
 
   T1NC_proc_m[, PREV_YEAR := YEAR - 1]
 
@@ -117,7 +117,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
   T1NC_proc_m_w =
     dcast.data.table(
       T1NC_proc_m,
-      formula = as.formula(formula), #SPECIES_CODE + STOCK_CODE + FLAG_CODE + GEAR_GROUP_CODE ~ YEAR,
+      formula = as.formula(formula),
       fun.aggregate = sum, #function(x) ifelse(is.na(x), NA_real_, x),
       value.var = "CATCH",
       drop = TRUE, fill = FALSE
@@ -126,7 +126,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
   T1NC_proc_m_d_w =
     dcast.data.table(
       T1NC_proc_m,
-      formula = as.formula(formula), #SPECIES_CODE + STOCK_CODE + FLAG_CODE + GEAR_GROUP_CODE ~ YEAR,
+      formula = as.formula(formula),
       fun.aggregate = function(x) ifelse(is.na(x), "", x),
       value.var = "CHANGE",
       drop = TRUE, fill = FALSE
@@ -193,8 +193,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
 
   T1NC_FT = T1NC_FT %>% merge_v(to_merge, combine = TRUE)
 
-  if(by_species)
-    T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE", "SPECIES_CODE"), combine = TRUE)
+  if(by_species) T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE", "SPECIES_CODE"), combine = TRUE)
 
   T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE")) # Necessary to properly format the output
 
@@ -203,8 +202,6 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     valign(j =  to_merge,                                 part = "body",   valign = "top") %>%
     valign(j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
     align( j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "header",  align = "center") %>%
-    align( j = "STOCK_CODE",                              part = "body",    align = "center") %>%
-    align( j = "CATCH_TYPE_CODE",                         part = "body",    align = "center") %>%
 
     bg    (                                               part = "header", bg    = "grey") %>%
     bg    (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
@@ -219,6 +216,9 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     fontsize(part = "all", size = 7) %>%
     autofit() %>%
     fix_border_issues()
+
+    if(by_stock)      T1NC_FT = T1NC_FT %>% align( j = "STOCK_CODE",      part = "body",    align = "center")
+    if(by_catch_type) T1NC_FT = T1NC_FT %>% align( j = "CATCH_TYPE_CODE", part = "body",    align = "center")
 
     if(colorize_gears & by_gear)
       T1NC_FT = T1NC_FT %>% bg(j = "GEAR_GROUP_CODE", part = "body", bg = gear_group_bg_matrix)
