@@ -195,6 +195,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
     valign(j =  to_merge,                                 part = "body",   valign = "top") %>%
     valign(j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
     align( j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "header",  align = "center") %>%
+    align( j = "STOCK_CODE",                              part = "body",    align = "center") %>%
 
     bg    (                                               part = "header", bg    = "grey") %>%
     bg    (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
