@@ -110,7 +110,7 @@ t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
   T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & LOG >= 4 & YEAR != min(YEAR), CHANGE := "++++"]
 
   T1NC_proc_m[!is.na(CATCH) &  is.na(CATCH_PREV) & CATCH == 0, CHANGE := "="]
-  T1NC_proc_m[!is.na(CATCH) & !is.na(CATCH_PREV) & CATCH == CATCH_PREV & CATCH != 0, CHANGE := "0"]
+  T1NC_proc_m[!is.na(CATCH) & !is.na(CATCH_PREV) & CATCH == CATCH_PREV & CATCH != 0 & LOG >= 1, CHANGE := "0"]
 
   T1NC_proc_m[YEAR == min(YEAR) & !is.na(CATCH), CHANGE := "="]
 
