@@ -1,3 +1,7 @@
+#' TBD
+#'
+#' @param data_matrix TBD
+#' @return TBD
 catalogue.viz.table.bg_matrix = function(data_matrix) {
   bg_matrix =
     ifelse(is.na(data_matrix) | data_matrix == "-", "darkgrey",
@@ -17,6 +21,10 @@ catalogue.viz.table.bg_matrix = function(data_matrix) {
   )
 }
 
+#' TBD
+#'
+#' @param data_matrix TBD
+#' @return TBD
 catalogue.viz.table.fg_matrix = function(data_matrix) {
   fg_matrix =
     ifelse(is.na(data_matrix) | data_matrix == "abc", "black", "black") # Originally "white", "black", when the darkest green was "darkgreen"
@@ -88,7 +96,6 @@ catalogue.viz.table.legend.colours = function() {
     autofit()
   )
 }
-
 
 #' TBD
 #'
