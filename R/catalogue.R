@@ -1,3 +1,95 @@
+catalogue.viz.table.bg_matrix = function(data_matrix) {
+  bg_matrix =
+    ifelse(is.na(data_matrix) | data_matrix == "-", "darkgrey",
+           ifelse(data_matrix == "-1", "red",
+                  ifelse(data_matrix == "a" | data_matrix == "b" | data_matrix == "c" | data_matrix == "bc", "yellow",
+                         ifelse(data_matrix == "ab" | data_matrix == "ac", "green",
+                                ifelse(data_matrix == "abc", darken("green", amount = .3),
+                                       "white"
+                                )
+                         )
+                  )
+           )
+    )
+
+  return(
+    bg_matrix
+  )
+}
+
+catalogue.viz.table.fg_matrix = function(data_matrix) {
+  fg_matrix =
+    ifelse(is.na(data_matrix) | data_matrix == "abc", "black", "black") # Originally "white", "black", when the darkest green was "darkgreen"
+
+  return(fg_matrix)
+}
+
+#' TBD
+#'
+#' @return TBD
+#' @export
+catalogue.viz.table.legend = function() {
+  legend = data.table(
+    Character = c("a", "b", "c"),
+    Represents = c("T2CE", "T2SZ", "T2CS (*)")
+  )
+
+  return(
+    flextable::flextable(legend) %>%
+    bg(part = "all",    bg = "white") %>%
+    bg(part = "header", bg = "gray") %>%
+
+    bold(part = "header") %>%
+
+    border_inner(part = "all", border = fp_border(width = .5)) %>%
+    border(part = "body", i = seq(2, nrow(legend), 2), border.bottom = fp_border(width = 1)) %>%
+    border(part = "all",  j = 1, border.left  = fp_border(width = 1)) %>%
+    border(part = "all",  j = 2, border.right = fp_border(width = 1)) %>%
+    align(part = "all", j = 1, align = "center") %>%
+    autofit()
+  )
+}
+
+#' TBD
+#'
+#' @return TBD
+#' @export
+catalogue.viz.table.legend.colours = function() {
+  colour_scheme = data.table(
+    `Concatenated string` = c("-1", "a", "b", "c", "bc", "ab", "ac", "abc"),
+    Represents = c("No T2 data",
+                   "T2CE only",
+                   "T2SZ only",
+                   "T2CS only",
+                   "T2SZ + T2CS",
+                   "T2CE + T2SZ",
+                   "T2CE + T2CS",
+                   "All")
+  )
+
+  return(
+    flextable::flextable(colour_scheme) %>%
+    bg(part = "all",    bg = "white") %>%
+    bg(part = "header", bg = "gray") %>%
+
+    bold(part = "header") %>%
+
+    border_inner(part = "all", border = fp_border(width = .5)) %>%
+
+    border(part = "body", i = seq(2, nrow(legend), 2), border.bottom = fp_border(width = 1)) %>%
+    border(part = "all",  j = 2, border.right = fp_border(width = 1)) %>%
+    border(part = "all",  j = 1, border.left  = fp_border(width = 1)) %>%
+
+    align(part = "all", align = "center") %>%
+
+    bg   (part = "body", bg    = catalogue.viz.table.bg_matrix(colour_scheme)) %>%
+    color(part = "body", color = catalogue.viz.table.fg_matrix(colour_scheme)) %>%
+
+    autofit()
+  )
+}
+
+
 #' TBD
 #'
 #' @param catalogue_data TBD
@@ -30,24 +122,8 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
     first_year_column = first_year_column - 1
   }
 
-  bg_matrix = catalogue_data[, first_year_column:ncol(catalogue_data)]
-
-  bg_matrix =
-    ifelse(is.na(bg_matrix) | bg_matrix == "-", "darkgrey",
-           ifelse(bg_matrix == "-1", "red",
-                  ifelse(bg_matrix == "a" | bg_matrix == "b" | bg_matrix == "c" | bg_matrix == "bc", "yellow",
-                         ifelse(bg_matrix == "ab" | bg_matrix == "ac", "green",
-                                ifelse(bg_matrix == "abc", darken("green", amount = .3),
-                                       "white"
-                                )
-                         )
-                  )
-           )
-    )
-
-  fg_matrix = catalogue_data[, first_year_column:ncol(catalogue_data)]
-  fg_matrix =
-    ifelse(is.na(fg_matrix) | fg_matrix == "abc", "black", "black") # Originally "white", "black", when the darkest green was "darkgreen"
+  bg_matrix = catalogue.viz.table.bg_matrix(catalogue_data[, first_year_column:ncol(catalogue_data)])
+  fg_matrix = catalogue.viz.table.fg_matrix(catalogue_data[, first_year_column:ncol(catalogue_data)])
 
   #set_flextable_defaults(extra_css = "th p span, td p span { white-space: nowrap !important; }")
 

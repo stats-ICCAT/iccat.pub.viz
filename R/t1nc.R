@@ -9,6 +9,84 @@ DEFAULT_TRENDS_REL_DIFF_LIMITS =
     T10000_     = list(LOW = .05, MED = .1, HIGH = .5, VERY_HIGH = .9)
   )
 
+t1nc.viz.trends.table.bg_matrix = function(data_matrix) {
+  bg_matrix =
+    ifelse(data_matrix == "", "lightgray",
+           ifelse(data_matrix == "+", "yellow",
+                  ifelse(data_matrix == "++", "orange",
+                         ifelse(data_matrix == "+++", "red",
+                                ifelse(data_matrix == "++++", "darkred",
+                                       ifelse(data_matrix == "0", "cyan",
+                                              "white")
+                                )
+                         )
+                  )
+           )
+    )
+
+  return(
+    bg_matrix
+  )
+}
+
+t1nc.viz.trends.table.fg_matrix = function(data_matrix) {
+  return(
+    t1nc.viz.trends.table.bg_matrix(data_matrix)
+  )
+}
+
+#' TBD
+#'
+#' @return TBD
+#' @export
+t1nc.viz.trends.legend = function() {
+  legend = data.table(
+    CATCH_MAGNITUDE = c("[0, 10)",
+                        "[10, 100)",
+                        "[100, 1,000)",
+                        "[1,000, 10,000)",
+                        "[10,000, ...)"),
+    DELTA_0      = c("-",   "0", "0",   "0",    "0"),
+    DELTA_0_5    = c("-",  "-",  "-",   "-",    "-"),
+    DELTA_5_10   = c("-",  "-",  "-",   "-",    "+"),
+    DELTA_10_50  = c("-",  "-",  "-",   "+",   "++"),
+    DELTA_50_90  = c("-",  "-",  "+",  "++",  "+++"),
+    DELTA_90_100 = c("-",  "+", "++", "+++", "++++"),
+    DELTA_NA     = c("-",  "+", "++", "+++", "++++")
+  )
+
+  FT = flextable::flextable(legend)
+
+  return(
+    FT %>%
+      fontsize(part = "all", size = 10) %>%
+      align(align = "center", part = "all") %>%
+
+      set_header_labels(values = c("", "0", "[0, 5)", "[5, 10)", "[10, 50)", "[50, 90)", "[90, 100]", "NA")) %>%
+      add_header_row(values = c("Catch magnitude (t)", "Delta with other catches (%)"), colwidths = c(1, 7)) %>%
+
+      bold(part = "header") %>%
+      bg  (part = "header", bg = "grey", i = 1) %>%
+      bg  (part = "header", bg = "lightgrey", i = 2) %>%
+
+      bold(part = "body", j = 1) %>%
+      bg  (part = "body",   bg = "lightgrey", j = 1) %>%
+
+      border(i = 1:2, part = "header", border.bottom = fp_border(width = 1)) %>%
+      merge_at(j = 1, i = 1:2, part = "header") %>%
+
+      border_inner(border = fp_border(width = 1)) %>%
+
+      border(j = 1, part = "all",  border.left  = fp_border(width = 1)) %>%
+      border(j = 8, part = "all",  border.right = fp_border(width = 1)) %>%
+      border(i = 1, part = "body", border.top   = fp_border(width = 2)) %>%
+
+      bg   (j = 2:8, part = "body", bg    = t1nc.viz.trends.table.bg_matrix(legend[, 2:8])) %>%
+      color(j = 2:8, part = "body", color = t1nc.viz.trends.table.fg_matrix(legend[, 2:8])) %>%
+      width(j = 1, width = 4, unit = "cm")
+  )
+}
+
 #' TBD
 #'
 #' @param t1nc_data TBD
@@ -21,10 +99,10 @@ DEFAULT_TRENDS_REL_DIFF_LIMITS =
 #' @param colorize_gears TBD
 #' @return TBD
 #' @export
-t1nc.viz.trends = function(t1nc_data, year_min = NA, year_max = NA,
-                           by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
-                           rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
-                           colorize_gears = FALSE) {
+t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
+                                 by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
+                                 rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
+                                 colorize_gears = FALSE) {
   sensitivity = min(1, max(0, 1 - sensitivity))
 
   T1NC_proc_m = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear, by_catch_type)$raw
