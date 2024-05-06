@@ -76,7 +76,7 @@ catalogue.viz.table.legend.colours = function() {
 
     border_inner(part = "all", border = fp_border(width = .5)) %>%
 
-    border(part = "body", i = seq(2, nrow(legend), 2), border.bottom = fp_border(width = 1)) %>%
+    border(part = "body", i = seq(2, nrow(colour_scheme), 2), border.bottom = fp_border(width = 1)) %>%
     border(part = "all",  j = 2, border.right = fp_border(width = 1)) %>%
     border(part = "all",  j = 1, border.left  = fp_border(width = 1)) %>%
 
