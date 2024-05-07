@@ -31,7 +31,7 @@ t1nc.viz.trends.table.bg_matrix = function(data_matrix) {
 
 t1nc.viz.trends.table.fg_matrix = function(data_matrix) {
   return(
-    t1nc.viz.trends.table.bg_matrix(data_matrix)
+    ifelse(data_matrix == "++++" | data_matrix == "+++", "white", "black")
   )
 }
 
@@ -213,26 +213,8 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
   last_row_by_flag = T1NC_proc_m_w[, .(ROW = max(.N)), keyby = .(FLAG_CODE)]
   last_row_by_flag[, ROW := cumsum(ROW)]
 
-  bg_matrix = T1NC_proc_m_d_w[, (grouped_columns + 1):ncol(T1NC_proc_m_d_w)]
-
-  bg_matrix =
-    ifelse(bg_matrix == "", "lightgray",
-           ifelse(bg_matrix == "+", "yellow",
-                  ifelse(bg_matrix == "++", "orange",
-                         ifelse(bg_matrix == "+++", "red",
-                                ifelse(bg_matrix == "++++", "darkred",
-                                       ifelse(bg_matrix == "0", "cyan",
-                                              "white")
-                                )
-                         )
-                  )
-           )
-    )
-
-  fg_matrix = T1NC_proc_m_d_w[, (grouped_columns + 1):ncol(T1NC_proc_m_d_w)]
-
-  fg_matrix =
-    ifelse(fg_matrix == "++++" | fg_matrix == "+++", "white", "black")
+  bg_matrix = t1nc.viz.trends.table.bg_matrix(T1NC_proc_m_d_w[, (grouped_columns + 1):ncol(T1NC_proc_m_d_w)])
+  fg_matrix = t1nc.viz.trends.table.fg_matrix(T1NC_proc_m_d_w[, (grouped_columns + 1):ncol(T1NC_proc_m_d_w)])
 
   if(by_gear) {
     gear_group_bg_matrix =
@@ -258,6 +240,9 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
 
   T1NC_FT =
     flextable(T1NC_proc_m_w) %>%
+    # This formatter is absolutely necessary, otherwise cells with NA (numeric) will not be formatted correctly
+    # and will not respect the line height set at table level
+    set_formatter(values = function(v) { return(ifelse(is.na(v), "-", prettyNum(v, big.mark = ",", scientific =))) }, part = "body") %>%
     bg(part = "all", bg = "white") %>% # Default BG color
     set_header_labels(values = list(SPECIES_CODE    = "Species",
                                     STOCK_CODE      = "Stock",
@@ -266,8 +251,8 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
                                     CATCH_TYPE_CODE = "Catch type")) %>%
     bold(part = "header") %>%
 
-    line_spacing(part = "all", space   = 0) %>%
-    padding     (part = "all", padding = 5)
+    padding(part = "all" , padding.left = 5, padding.right = 5) %>%
+    padding(part = "body", padding.top  = 0, padding.bottom = 0)
 
   T1NC_FT = T1NC_FT %>% merge_v(to_merge, combine = TRUE)
 
@@ -285,11 +270,10 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
     bg    (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
     color (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   color = fg_matrix) %>%
 
-    border(part = "header", border.left = fp_border(),   border.right = fp_border()) %>%
-    border(part = "body",   border.bottom = fp_border(), border.right = fp_border()) %>%
-    border(part = "body",   j = 1, border.left = fp_border()) %>%
+    border(part = "all",    border = fp_border(width = .5)) %>%
+    border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2)) %>%
 
-    border(part = "body", i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2)) %>%
+    border(part = "body",   i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2)) %>%
 
     fontsize(part = "all", size = 7) %>%
     autofit() %>%
