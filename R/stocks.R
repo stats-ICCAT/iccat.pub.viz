@@ -12,7 +12,7 @@ stock.viz.summary = function(species_codes = NULL) {
 
   stock_table =
     flextable(stock_summary) %>%
-    bg(part = "all", color = "white") %>%
+    bg(part = "all", bg = "white") %>%
     set_header_labels(values = list(SPECIES_GROUP         = "Species group",
                                     SPECIES_CODE          = "Species code",
                                     STOCK_CODE            = "Stock code",
@@ -55,7 +55,7 @@ stock.viz.data = function(species_codes = NULL) {
 
   table =
     flextable(stock_data[, .(STOCK_CODE, STATISTICAL_AREA_CODE, SAMPLING_AREA_CODE)]) %>%
-    bg(part = "all", color = "white") %>%
+    bg(part = "all", bg = "white") %>%
     set_header_labels(values = list(STOCK_CODE            = "Stock code",
                                     STATISTICAL_AREA_CODE = ifelse(has_stocks, "Statistical area code", "Management area code"),
                                     SAMPLING_AREA_CODE    = "Sampling area code")) %>%
