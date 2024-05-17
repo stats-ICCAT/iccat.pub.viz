@@ -9,7 +9,12 @@ catalogue.viz.table(
   show_catches_gradient = TRUE,
   remove_species = FALSE,
   remove_stock = FALSE,
-  truncate_years = TRUE
+  truncate_years = TRUE,
+  flag_separator_width = 1,
+  default_font_size = 7,
+  values_font_size = 7,
+  default_h_padding = 5,
+  values_h_padding = 2
 )
 }
 \arguments{
@@ -20,6 +25,14 @@ catalogue.viz.table(
 \item{remove_stock}{TBD}
 
 \item{truncate_years}{TBD}
+
+\item{flag_separator_width}{TBD}
+
+\item{default_font_size}{TBD}
+
+\item{values_font_size}{TBD}
+
+\item{default_h_padding}{TBD}
 }
 \value{
 TBD

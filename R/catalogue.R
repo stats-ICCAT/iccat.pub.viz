@@ -103,9 +103,15 @@ catalogue.viz.table.legend.colours = function() {
 #' @param remove_species TBD
 #' @param remove_stock TBD
 #' @param truncate_years TBD
+#' @param flag_separator_width TBD
+#' @param default_font_size TBD
+#' @param values_font_size TBD
+#' @param default_h_padding TBD
+#' @param values_h_padding
 #' @return TBD
 #' @export
-catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, remove_species = FALSE, remove_stock = FALSE, truncate_years = TRUE) {
+catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, remove_species = FALSE, remove_stock = FALSE, truncate_years = TRUE,
+                               flag_separator_width = 1, default_font_size = 7, values_font_size = 7, default_h_padding = 5, values_h_padding = 2) {
   DEBUG("Building catalog table...")
 
   first_year_column = 11
@@ -144,12 +150,11 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
                                     PercCum = "% (cum.)",
                                     DSet = "DS")) %>%
 
-    fontsize(size = 8, part = "all") %>%
-    fontsize(size = 6, i = seq(1, nrow(catalogue_data), 2), j = first_year_column:ncol(catalogue_data), part = "body") %>%
+    flextable::fontsize(size = default_font_size, part = "all") %>%
+    flextable::fontsize(size = values_font_size,  i = seq(1, nrow(catalogue_data), 2), j = first_year_column:ncol(catalogue_data), part = "body") %>%
 
-    padding(part = "all" , j =                 1:(first_year_column-1), padding.left = 2, padding.right = 2) %>%
-    padding(part = "all" , j = first_year_column:ncol(catalogue_data),  padding.left = 5, padding.right = 5) %>%
-    padding(part = "body", padding.top  = 0, padding.bottom = 0) %>%
+    flextable::padding(part = "all", padding.top = 0, padding.bottom = 0, padding.left = default_h_padding, padding.right = default_h_padding) %>%
+    flextable::padding(part = "all", j = first_year_column:ncol(catalogue_data), padding.left = values_h_padding, padding.right = values_h_padding) %>%
 
     flextable::bg   (part = "all",    bg = "white") %>%
     flextable::bg   (part = "header", bg = "gray") %>%
@@ -176,19 +181,18 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
                          "Perc",
                          "PercCum"), part = "body", combine = TRUE) %>%
 
-    flextable::border(part = "all",    border = fp_border(width = .5)) %>%
-    flextable::border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2)) %>%
+    flextable::border(part = "all",                                         border        = fp_border(width = .5)) %>%
+    flextable::border(part = "header",                                      border.top    = fp_border(width = flag_separator_width), border.bottom = fp_border(width = flag_separator_width)) %>%
+    flextable::border(part = "body",   i = seq(2, nrow(catalogue_data), 2), border.bottom = fp_border(width = flag_separator_width)) %>%
 
-    flextable::border(part = "body",   i = seq(2, nrow(catalogue_data), 2), border.bottom = fp_border(width = 2)) %>%
-
-    flextable::bg   (part = "body", j = first_year_column:ncol(catalogue_data), bg    = bg_matrix)
+    flextable::bg(part = "body", j = first_year_column:ncol(catalogue_data), bg = bg_matrix)
 
   if(show_catches_gradient) {
     bg_matrix_catch = catalogue_data[, c("Perc", "PercCum")]
-    bg_matrix_catch$PercCum = rgb(.3, 1, .3,     bg_matrix_catch$PercCum / 100)
+    bg_matrix_catch$PercCum = rgb(.3, 1, .3, bg_matrix_catch$PercCum / 100)
 
     FT = FT%>%
-      flextable::bg   (part = "body", j = "PercCum", bg    = bg_matrix_catch$PercCum)
+      flextable::bg   (part = "body", j = "PercCum", bg = bg_matrix_catch$PercCum)
   }
 
   FT = FT %>%
