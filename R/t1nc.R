@@ -272,7 +272,6 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
 
     border(part = "all",    border = fp_border(width = .5)) %>%
     border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2)) %>%
-
     border(part = "body",   i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2)) %>%
 
     fontsize(part = "all", size = 7) %>%

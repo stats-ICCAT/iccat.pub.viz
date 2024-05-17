@@ -4,7 +4,7 @@
 #' @return TBD
 catalogue.viz.table.bg_matrix = function(data_matrix) {
   bg_matrix =
-    ifelse(is.na(data_matrix) | data_matrix == "-", "darkgrey",
+    ifelse(is.na(data_matrix) | data_matrix == "-", "lightgray",
            ifelse(data_matrix == "-1", "red",
                   ifelse(data_matrix == "a" | data_matrix == "b" | data_matrix == "c" | data_matrix == "bc", "yellow",
                          ifelse(data_matrix == "ab" | data_matrix == "ac", "green",
@@ -147,11 +147,9 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
     fontsize(size = 8, part = "all") %>%
     fontsize(size = 6, i = seq(1, nrow(catalogue_data), 2), j = first_year_column:ncol(catalogue_data), part = "body") %>%
 
-    padding(padding        = 1, part = "all") %>%
-    padding(padding.top    = 0, part = "body") %>%
-    padding(padding.bottom = 0, part = "body") %>%
-    padding(padding.left   = 3, part = "body", j = c("FlagName")) %>%
-    padding(padding.right  = 2, part = "body", j = c("TotCatches", "Perc", "PercCum")) %>%
+    padding(part = "all" , j =                 1:(first_year_column-1), padding.left = 2, padding.right = 2) %>%
+    padding(part = "all" , j = first_year_column:ncol(catalogue_data),  padding.left = 5, padding.right = 5) %>%
+    padding(part = "body", padding.top  = 0, padding.bottom = 0) %>%
 
     flextable::bg   (part = "all",    bg = "white") %>%
     flextable::bg   (part = "header", bg = "gray") %>%
@@ -178,28 +176,25 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
                          "Perc",
                          "PercCum"), part = "body", combine = TRUE) %>%
 
-    flextable::border_inner(part = "all",                                       border        = fp_border(width =  .5)) %>%
-    flextable::border      (part = "body", i = seq(2, nrow(catalogue_data), 2), border.bottom = fp_border(width = 1.0)) %>%
+    flextable::border(part = "all",    border = fp_border(width = .5)) %>%
+    flextable::border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2)) %>%
 
-    flextable::color(part = "body", j = "GearGrp", i = catalogue_data[GearGrp == "UN", which = TRUE], color = "red") %>%
+    flextable::border(part = "body",   i = seq(2, nrow(catalogue_data), 2), border.bottom = fp_border(width = 2)) %>%
 
     flextable::bg   (part = "body", j = first_year_column:ncol(catalogue_data), bg    = bg_matrix)
 
   if(show_catches_gradient) {
     bg_matrix_catch = catalogue_data[, c("Perc", "PercCum")]
-    #bg_matrix_catch$Perc    = rgb(.3, 1, .3, 1 - bg_matrix_catch$Perc    / 100)
     bg_matrix_catch$PercCum = rgb(.3, 1, .3,     bg_matrix_catch$PercCum / 100)
 
     FT = FT%>%
-      #flextable::bg   (part = "body", j = 8, bg    = bg_matrix_catch$Perc) %>%
       flextable::bg   (part = "body", j = "PercCum", bg    = bg_matrix_catch$PercCum)
   }
 
   FT = FT %>%
 
     flextable::color(part = "body", j = first_year_column:ncol(catalogue_data), color = fg_matrix) %>%
-
-    flextable::width(j = first_year_column:ncol(catalogue_data), width = .30) %>%
+    flextable::autofit() %>%
     flextable::fix_border_issues()
 
   end = Sys.time()
