@@ -107,7 +107,7 @@ catalogue.viz.table.legend.colours = function() {
 #' @param default_font_size TBD
 #' @param values_font_size TBD
 #' @param default_h_padding TBD
-#' @param values_h_padding
+#' @param values_h_padding TBD
 #' @return TBD
 #' @export
 catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, remove_species = FALSE, remove_stock = FALSE, truncate_years = TRUE,
