@@ -114,7 +114,7 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
     if(show_catches_gradient) stop("The catch gradient can only be shown if the data is sorted by fishery rank (i.e., rank = TRUE)")
   }
 
-  if(!is.na(max_cumulative_percentage) & max_cumulative_percentage < 0 | max_cumulative_percentage > 1) stop("The maximum cumulative percentage should be set to a value between 0 and 1 (both included)")
+  if(!is.na(max_cumulative_percentage) & ( max_cumulative_percentage < 0 | max_cumulative_percentage > 1 )) stop("The maximum cumulative percentage should be set to a value between 0 and 1 (both included)")
 
   sensitivity = min(1, max(0, 1 - sensitivity))
 
