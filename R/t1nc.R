@@ -94,19 +94,23 @@ t1nc.viz.trends.legend = function() {
 #' @param by_stock TBD
 #' @param by_gear TBD
 #' @param by_catch_type TBD
+#' @param rank TBD
 #' @param rel_diff_limits TBD
 #' @param sensitivity TBD
+#' @param show_catches_gradient TBD
 #' @param colorize_gears TBD
 #' @return TBD
 #' @export
 t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
                                  by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
+                                 rank = FALSE,
                                  rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
-                                 colorize_gears = FALSE) {
+                                 show_catches_gradient = FALSE, colorize_gears = FALSE) {
   sensitivity = min(1, max(0, 1 - sensitivity))
 
-  T1NC_proc_m = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear, by_catch_type)$raw
+  T1NC_proc = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear, by_catch_type, rank)
 
+  T1NC_proc_m = T1NC_proc$raw
   T1NC_proc_m[, PREV_YEAR := YEAR - 1]
 
   formula_components = c()
@@ -210,6 +214,15 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
       drop = TRUE, fill = FALSE
     )
 
+  if(rank) {
+    T1NC_proc_m_d_w =
+      merge(T1NC_proc$grouped[, 1:(grouped_columns + 2)],
+            T1NC_proc_m_d_w)[order(-AVG_CATCH_RATIO)]
+
+    T1NC_proc_m_d_w$AVG_CATCH_RATIO     = NULL
+    T1NC_proc_m_d_w$AVG_CATCH_RATIO_CUM = NULL
+  }
+
   last_row_by_flag = T1NC_proc_m_w[, .(ROW = max(.N)), keyby = .(FLAG_CODE)]
   last_row_by_flag[, ROW := cumsum(ROW)]
 
@@ -230,50 +243,91 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
       )
   }
 
+  if(rank) {
+    T1NC_proc_m_w =
+      merge(T1NC_proc$grouped[, 1:(grouped_columns + 2)],
+            T1NC_proc_m_w)[order(-AVG_CATCH_RATIO)]
+
+    T1NC_proc_m_w[, AVG_CATCH_RATIO     := format(round(AVG_CATCH_RATIO * 100, 2), nsmall = 2)]
+    T1NC_proc_m_w[, AVG_CATCH_RATIO_CUM := format(round(AVG_CATCH_RATIO_CUM * 100, 2), nsmall = 2)]
+
+    if(show_catches_gradient) {
+      bg_matrix_catch = T1NC_proc_m_w[, .(AVG_CATCH_RATIO, AVG_CATCH_RATIO_CUM)]
+      bg_matrix_catch$AVG_CATCH_RATIO_CUM = rgb(.3, 1, .3, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM) / 100)
+    }
+  }
+
   to_merge = c()
 
-                    to_merge = append(to_merge, "FLAG_CODE")
-  if(by_species)    to_merge = append(to_merge, "SPECIES_CODE")
-  #if(by_stock)     to_merge = append(to_merge, "STOCK_CODE")
-  if(by_gear)       to_merge = append(to_merge, "GEAR_GROUP_CODE")
-  #if(by_catch_type) to_merge = append(to_merge, "CATCH_TYPE_CODE")
+  if(!rank) {
+                      to_merge = append(to_merge, "FLAG_CODE")
+    if(by_species)    to_merge = append(to_merge, "SPECIES_CODE")
+    #if(by_stock)     to_merge = append(to_merge, "STOCK_CODE")
+    if(by_gear)       to_merge = append(to_merge, "GEAR_GROUP_CODE")
+    #if(by_catch_type) to_merge = append(to_merge, "CATCH_TYPE_CODE")
+  }
+
+  delta = ifelse(rank, 2, 0)
 
   T1NC_FT =
     flextable(T1NC_proc_m_w) %>%
     # This formatter is absolutely necessary, otherwise cells with NA (numeric) will not be formatted correctly
     # and will not respect the line height set at table level
-    set_formatter(values = function(v) { return(ifelse(is.na(v), "-", prettyNum(v, big.mark = ",", scientific =))) }, part = "body") %>%
+    set_formatter(values = function(v) { return(ifelse(is.na(v), "-", prettyNum(v, big.mark = ",", scientific = FALSE))) }, part = "body") %>%
     bg(part = "all", bg = "white") %>% # Default BG color
     set_header_labels(values = list(SPECIES_CODE    = "Species",
                                     STOCK_CODE      = "Stock",
                                     FLAG_CODE       = "Flag name",
                                     GEAR_GROUP_CODE = "Gear group",
-                                    CATCH_TYPE_CODE = "Catch type")) %>%
+                                    CATCH_TYPE_CODE = "Catch type",
+                                    AVG_CATCH_RATIO = "%",
+                                    AVG_CATCH_RATIO_CUM = "% (cum.)"
+                                    )) %>%
     bold(part = "header") %>%
 
     padding(part = "all" , padding.left = 5, padding.right = 5) %>%
     padding(part = "body", padding.top  = 0, padding.bottom = 0)
 
-  T1NC_FT = T1NC_FT %>% merge_v(to_merge, combine = TRUE)
+  if(!rank) {
+    T1NC_FT = T1NC_FT %>% merge_v(to_merge, combine = TRUE)
 
-  if(by_species) T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE", "SPECIES_CODE"), combine = TRUE)
+    if(by_species) T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE", "SPECIES_CODE"), combine = TRUE)
 
-  T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE")) # Necessary to properly format the output
+    T1NC_FT = T1NC_FT %>% merge_v(j = c("FLAG_CODE")) # Necessary to properly format the output
+  }
 
   T1NC_FT = T1NC_FT %>%
-    valign(j = "FLAG_CODE",                               part = "body",   valign = "top") %>%
-    valign(j =  to_merge,                                 part = "body",   valign = "top") %>%
-    valign(j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
-    align( j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "header",  align = "center") %>%
+    valign(j = "FLAG_CODE",                                       part = "body",   valign = "top") %>%
+    valign(j =  to_merge,                                         part = "body",   valign = "top") %>%
+    valign(j = (grouped_columns + 1 + delta):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
+    align(part = "header", align = "center") %>%
+    align(part = "header", align = "left", j = "FLAG_CODE")
 
-    bg    (                                               part = "header", bg    = "grey") %>%
-    bg    (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
-    color (j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "body",   color = fg_matrix) %>%
+  if(by_species)     T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "SPECIES_CODE")
+  if(by_gear)        T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "GEAR_GROUP_CODE")
+  if(by_stock)       T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "STOCK_CODE")
+  if(by_catch_type)  T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "CATCH_TYPE_CODE")
+
+  if(rank)           T1NC_FT = T1NC_FT %>% align(part = "body",   align = "right", j = c("AVG_CATCH_RATIO", "AVG_CATCH_RATIO_CUM"))
+
+    #align(part = "header", align = "right", j = c("AVG_CATCH_RATIO", "AVG_CATCH_RATIO_CUM")) %>%
+
+  T1NC_FT = T1NC_FT %>%
+    bg    (                                                       part = "header", bg    = "grey") %>%
+    bg    (j = (grouped_columns + 1 + delta):ncol(T1NC_proc_m_w), part = "body",   bg    = bg_matrix) %>%
+    color (j = (grouped_columns + 1 + delta):ncol(T1NC_proc_m_w), part = "body",   color = fg_matrix) %>%
 
     border(part = "all",    border = fp_border(width = .5)) %>%
-    border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2)) %>%
-    border(part = "body",   i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2)) %>%
+    border(part = "header", border.top = fp_border(width = 2), border.bottom = fp_border(width = 2))
 
+  if(!rank)
+    T1NC_FT = T1NC_FT %>%
+      border(part = "body",   i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2))
+
+  if(rank & show_catches_gradient)
+    T1NC_FT = T1NC_FT %>% bg   (part = "body", j = "AVG_CATCH_RATIO_CUM", bg = bg_matrix_catch$AVG_CATCH_RATIO_CUM)
+
+  T1NC_FT = T1NC_FT %>%
     fontsize(part = "all", size = 7) %>%
     autofit() %>%
     fix_border_issues()
