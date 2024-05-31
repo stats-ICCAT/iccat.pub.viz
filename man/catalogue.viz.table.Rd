@@ -33,6 +33,8 @@ catalogue.viz.table(
 \item{values_font_size}{TBD}
 
 \item{default_h_padding}{TBD}
+
+\item{values_h_padding}{TBD}
 }
 \value{
 TBD
