@@ -248,12 +248,13 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
       merge(T1NC_proc$grouped[, 1:(grouped_columns + 2)],
             T1NC_proc_m_w)[order(-AVG_CATCH_RATIO)]
 
-    T1NC_proc_m_w[, AVG_CATCH_RATIO     := format(round(AVG_CATCH_RATIO * 100, 2), nsmall = 2)]
+    T1NC_proc_m_w[, AVG_CATCH_RATIO     := format(round(AVG_CATCH_RATIO     * 100, 2), nsmall = 2)]
     T1NC_proc_m_w[, AVG_CATCH_RATIO_CUM := format(round(AVG_CATCH_RATIO_CUM * 100, 2), nsmall = 2)]
 
     if(show_catches_gradient) {
       bg_matrix_catch = T1NC_proc_m_w[, .(AVG_CATCH_RATIO, AVG_CATCH_RATIO_CUM)]
-      bg_matrix_catch$AVG_CATCH_RATIO_CUM = rgb(.3, 1, .3, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM) / 100)
+      bg_matrix_catch$AVG_CATCH_RATIO     = rgb(.6, .6, 1, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO)     / max(as.numeric(bg_matrix_catch$AVG_CATCH_RATIO)))
+      bg_matrix_catch$AVG_CATCH_RATIO_CUM = rgb(.3, 1, .3, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM) / max(as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM)))
     }
   }
 
@@ -305,8 +306,8 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
 
   if(by_species)     T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "SPECIES_CODE")
   if(by_gear)        T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "GEAR_GROUP_CODE")
-  if(by_stock)       T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "STOCK_CODE")
-  if(by_catch_type)  T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "CATCH_TYPE_CODE")
+  #if(by_stock)       T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "STOCK_CODE")
+  #if(by_catch_type)  T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "CATCH_TYPE_CODE")
 
   if(rank)           T1NC_FT = T1NC_FT %>% align(part = "body",   align = "right", j = c("AVG_CATCH_RATIO", "AVG_CATCH_RATIO_CUM"))
 
@@ -324,8 +325,10 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
     T1NC_FT = T1NC_FT %>%
       border(part = "body",   i = last_row_by_flag$ROW, border.bottom = fp_border(width = 2))
 
-  if(rank & show_catches_gradient)
-    T1NC_FT = T1NC_FT %>% bg   (part = "body", j = "AVG_CATCH_RATIO_CUM", bg = bg_matrix_catch$AVG_CATCH_RATIO_CUM)
+  if(rank & show_catches_gradient) {
+    T1NC_FT = T1NC_FT %>% bg(part = "body", j = "AVG_CATCH_RATIO",     bg = bg_matrix_catch$AVG_CATCH_RATIO)
+    T1NC_FT = T1NC_FT %>% bg(part = "body", j = "AVG_CATCH_RATIO_CUM", bg = bg_matrix_catch$AVG_CATCH_RATIO_CUM)
+  }
 
   T1NC_FT = T1NC_FT %>%
     fontsize(part = "all", size = 7) %>%

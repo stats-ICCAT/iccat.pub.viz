@@ -189,9 +189,11 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 
   if(show_catches_gradient) {
     bg_matrix_catch = catalogue_data[, c("Perc", "PercCum")]
-    bg_matrix_catch$PercCum = rgb(.3, 1, .3, bg_matrix_catch$PercCum / 100)
+    bg_matrix_catch$Perc    = rgb(.6, .6, 1, bg_matrix_catch$Perc    / max(bg_matrix_catch$Perc))
+    bg_matrix_catch$PercCum = rgb(.3, 1, .3, bg_matrix_catch$PercCum / max(bg_matrix_catch$PercCum))
 
     FT = FT%>%
+      flextable::bg   (part = "body", j = "Perc",    bg = bg_matrix_catch$Perc) %>%
       flextable::bg   (part = "body", j = "PercCum", bg = bg_matrix_catch$PercCum)
   }
 
