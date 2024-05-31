@@ -318,11 +318,16 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
   }
 
   T1NC_FT = T1NC_FT %>%
-    valign(j = "FLAG_CODE",                                       part = "body",   valign = "top") %>%
-    valign(j =  to_merge,                                         part = "body",   valign = "top") %>%
-    valign(j = (grouped_columns + 1 + delta):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
+    valign(j = "FLAG_CODE",                               part = "body",   valign = "top") %>%
+    valign(j =  to_merge,                                 part = "body",   valign = "top") %>%
+    valign(j = (grouped_columns + 1):ncol(T1NC_proc_m_w), part = "all",    valign = "center") %>%
     align(part = "header", align = "center") %>%
     align(part = "header", align = "left", j = "FLAG_CODE")
+
+  if(rank) {
+    T1NC_FT = T1NC_FT %>%
+      valign(j = c("AVG_CATCH_RATIO", "AVG_CATCH_RATIO_CUM"), part = "body", valign = "center")
+  }
 
   if(by_species)     T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "SPECIES_CODE")
   if(by_gear)        T1NC_FT = T1NC_FT %>% align(part = "header", align = "left",  j = "GEAR_GROUP_CODE")
