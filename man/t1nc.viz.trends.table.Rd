@@ -13,6 +13,7 @@ t1nc.viz.trends.table(
   by_gear = TRUE,
   by_catch_type = TRUE,
   rank = FALSE,
+  max_cumulative_percentage = NA,
   rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS,
   sensitivity = 0,
   show_catches_gradient = FALSE,
@@ -31,6 +32,8 @@ t1nc.viz.trends.table(
 \item{by_catch_type}{TBD}
 
 \item{rank}{TBD}
+
+\item{max_cumulative_percentage}{TBD}
 
 \item{rel_diff_limits}{TBD}
 

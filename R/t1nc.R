@@ -95,6 +95,7 @@ t1nc.viz.trends.legend = function() {
 #' @param by_gear TBD
 #' @param by_catch_type TBD
 #' @param rank TBD
+#' @param max_cumulative_percentage TBD
 #' @param rel_diff_limits TBD
 #' @param sensitivity TBD
 #' @param show_catches_gradient TBD
@@ -103,9 +104,18 @@ t1nc.viz.trends.legend = function() {
 #' @export
 t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
                                  by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
-                                 rank = FALSE,
+                                 rank = FALSE, max_cumulative_percentage = NA,
                                  rel_diff_limits = DEFAULT_TRENDS_REL_DIFF_LIMITS, sensitivity = 0,
                                  show_catches_gradient = FALSE, colorize_gears = FALSE) {
+  if(sensitivity < 0 | sensitivity > 1) stop("Sensitivity should be set to a value between 0 and 1 (both included)")
+
+  if(!rank) {
+    if(!is.na(max_cumulative_percentage)) stop("A maximum cumulative percentage can be provided only if the data is sorted by fishery rank (i.e., rank = TRUE)")
+    if(show_catches_gradient) stop("The catch gradient can only be shown if the data is sorted by fishery rank (i.e., rank = TRUE)")
+  }
+
+  if(!is.na(max_cumulative_percentage) & max_cumulative_percentage < 0 | max_cumulative_percentage > 1) stop("The maximum cumulative percentage should be set to a value between 0 and 1 (both included)")
+
   sensitivity = min(1, max(0, 1 - sensitivity))
 
   T1NC_proc = t1nc.summarise(t1nc_data, year_min, year_max, by_species, by_stock, by_gear, by_catch_type, rank)
@@ -219,11 +229,18 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
       merge(T1NC_proc$grouped[, 1:(grouped_columns + 2)],
             T1NC_proc_m_d_w)[order(-AVG_CATCH_RATIO)]
 
+    T1NC_proc_m_w =
+      merge(T1NC_proc_m_w,
+            T1NC_proc_m_d_w[, 1:grouped_columns])
+
+    if(!is.na(max_cumulative_percentage))
+      T1NC_proc_m_d_w = T1NC_proc_m_d_w[AVG_CATCH_RATIO_CUM <= max_cumulative_percentage ]
+
     T1NC_proc_m_d_w$AVG_CATCH_RATIO     = NULL
     T1NC_proc_m_d_w$AVG_CATCH_RATIO_CUM = NULL
   }
 
-  last_row_by_flag = T1NC_proc_m_w[, .(ROW = max(.N)), keyby = .(FLAG_CODE)]
+  last_row_by_flag = T1NC_proc_m_d_w[, .(ROW = max(.N)), keyby = .(FLAG_CODE)]
   last_row_by_flag[, ROW := cumsum(ROW)]
 
   bg_matrix = t1nc.viz.trends.table.bg_matrix(T1NC_proc_m_d_w[, (grouped_columns + 1):ncol(T1NC_proc_m_d_w)])
@@ -246,16 +263,19 @@ t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
   if(rank) {
     T1NC_proc_m_w =
       merge(T1NC_proc$grouped[, 1:(grouped_columns + 2)],
-            T1NC_proc_m_w)[order(-AVG_CATCH_RATIO)]
-
-    T1NC_proc_m_w[, AVG_CATCH_RATIO     := format(round(AVG_CATCH_RATIO     * 100, 2), nsmall = 2)]
-    T1NC_proc_m_w[, AVG_CATCH_RATIO_CUM := format(round(AVG_CATCH_RATIO_CUM * 100, 2), nsmall = 2)]
+            T1NC_proc_m_w)[order(-AVG_CATCH_RATIO)
+                           ]
+    if(!is.na(max_cumulative_percentage))
+      T1NC_proc_m_w = T1NC_proc_m_w[AVG_CATCH_RATIO_CUM <= max_cumulative_percentage ]
 
     if(show_catches_gradient) {
       bg_matrix_catch = T1NC_proc_m_w[, .(AVG_CATCH_RATIO, AVG_CATCH_RATIO_CUM)]
-      bg_matrix_catch$AVG_CATCH_RATIO     = rgb(.6, .6, 1, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO)     / max(as.numeric(bg_matrix_catch$AVG_CATCH_RATIO)))
-      bg_matrix_catch$AVG_CATCH_RATIO_CUM = rgb(.3, 1, .3, as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM) / max(as.numeric(bg_matrix_catch$AVG_CATCH_RATIO_CUM)))
+      bg_matrix_catch$AVG_CATCH_RATIO     = rgb(.6, .6, 1, bg_matrix_catch$AVG_CATCH_RATIO     / max(bg_matrix_catch$AVG_CATCH_RATIO))
+      bg_matrix_catch$AVG_CATCH_RATIO_CUM = rgb(.3, 1, .3, bg_matrix_catch$AVG_CATCH_RATIO_CUM / max(bg_matrix_catch$AVG_CATCH_RATIO_CUM))
     }
+
+    T1NC_proc_m_w[, AVG_CATCH_RATIO     := format(round(AVG_CATCH_RATIO     * 100, 2), nsmall = 2)]
+    T1NC_proc_m_w[, AVG_CATCH_RATIO_CUM := format(round(AVG_CATCH_RATIO_CUM * 100, 2), nsmall = 2)]
   }
 
   to_merge = c()
