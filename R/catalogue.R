@@ -142,7 +142,7 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 
   FT = flextable(catalogue_data) %>%
     set_table_properties(opts_html = list(extra_css = "th p span, td p span { white-space: nowrap !important; }")) %>%
-    set_header_labels(values = list(FlagName = "Flag",
+    set_header_labels(values = list(FlagName = "Flag name",
                                     GearGrp = "Gear",
                                     FisheryRank = "Rank",
                                     TotCatches = "Total (t)",

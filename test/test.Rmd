@@ -1,0 +1,46 @@
+---
+title: "Test title"
+subtitle: "Test subtitle"
+author: "Test author"
+output: 
+  powerpoint_presentation:
+    reference_doc: "./template.potx"
+    slide_level: 2
+---
+  
+```{r general_options, echo = FALSE}
+knitr::opts_chunk$set(
+  echo = FALSE, 
+  tidy.opts = list(width.cutoff = 60), 
+  tidy = TRUE, 
+  size = "small", 
+  fig.width = 12, 
+  fig.height = 6.75,
+  
+  fig.asp     = 0.65,
+  fig.dpi     = 300
+)
+
+```
+
+## Purpose
+
+To provide participants at the **Mediterranean Albacore Data Preparatory and Assessment Meeting** with a review of the status of the information on albacore tuna (_Thunnus alalunga_) for the years 1950-2022 available to the ICCAT Secretariat as of May 2024.
+
+---
+
+## By fleet (1993-2007)
+
+```{r ALB_M_TRENDS_1, ft.align = "center", tab.id = "BAR"}
+update_trends_table(ALB_M_trends %>% flextable::set_caption("FOO"), columns_to_remove = 17:31, by_gears = FALSE) 
+```
+
+---
+
+## By fleet (2008-2022)
+
+```{r ALB_M_TRENDS_2}
+update_trends_table(ALB_M_trends, columns_to_remove =  2:16, by_gears = FALSE)
+```
+
+---
