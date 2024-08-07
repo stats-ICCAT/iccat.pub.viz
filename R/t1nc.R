@@ -414,91 +414,112 @@ standardize_party_status = function(t1nc_data) {
   return(t1nc_data)
 }
 
+standardize_stocks = function(t1nc_data) {
+  t1nc_data$Stock =
+    factor(
+      t1nc_data$Stock, # To establish a non-lexicographic order where MED comes after ATE but before ATW
+      levels = c("", "A+M", "ATL", "ATN", "ANE", "ANW", "ATS", "ASE", "ASW", "ATE", "MED", "ATW"),
+      labels = c("", "A+M", "ATL", "ATN", "ANE", "ANW", "ATS", "ASE", "ASW", "ATE", "MED", "ATW"),
+      ordered = TRUE
+    )
+
+  return(t1nc_data)
+}
+
 standardize = function(t1nc_data) {
   return(
     standardize_years(
       standardize_catch_types(
         standardize_party_status(
-          t1nc_data
+          standardize_stocks(
+            t1nc_data
+          )
         )
       )
     )
   )
 }
 
-prepare_t1nc_table_global = function(t1nc_data) {
+prepare_t1nc_table_global = function(t1nc_data, fill = NA) {
   t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(STOCK_CODE = Stock)]
 
-  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 0)), keyby = .(YEAR = YearC, STOCK_CODE = Stock)]
+  summary     = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, STOCK = Stock)]
+
+  summary_tot = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC)]
+  summary_tot$STOCK = ""
+
+  if(length(unique(summary$STOCK)) > 1)
+    summary = rbind(summary, summary_tot)
+
+  result =
+    dcast.data.table(
+      summary,
+      STOCK ~ YEAR,
+      fun.aggregate = sum,
+      value.var = "CATCH",
+      fill = fill
+    )
+
+  return(result)
+}
+
+prepare_t1nc_table_stock  = function(t1nc_data, fill = NA) {
+  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock)]
+
+  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, CATCH_TYPE, STOCK = Stock)]
 
   return(
     dcast.data.table(
       summary,
-      STOCK_CODE ~ YEAR,
+      CATCH_TYPE + STOCK ~ YEAR,
       fun.aggregate = sum,
       value.var = "CATCH",
-      fill = 0
+      fill = fill
     )
   )
 }
 
-prepare_t1nc_table_stock = function(t1nc_data) {
-  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(STOCK_CODE = Stock, CATCH_TYPE)]
+prepare_t1nc_table_gears  = function(t1nc_data, fill = NA) {
+  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock, GEAR_GROUP = SpcGearGrp)]
 
-  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 0)), keyby = .(YEAR = YearC, CATCH_TYPE, STOCK_CODE = Stock)]
+  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, CATCH_TYPE, STOCK = Stock, GEAR_GROUP = SpcGearGrp)]
 
   return(
     dcast.data.table(
       summary,
-      STOCK_CODE + CATCH_TYPE ~ YEAR,
+      CATCH_TYPE + STOCK + GEAR_GROUP ~ YEAR,
       fun.aggregate = sum,
       value.var = "CATCH",
-      fill = 0
+      fill = fill
     )
   )
 }
 
-prepare_t1nc_table_gears = function(t1nc_data) {
-  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, GEAR_GROUP = SpcGearGrp)]
+prepare_t1nc_table_CPCs   = function(t1nc_data, fill = NA) {
+  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
 
-  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 0)), keyby = .(YEAR = YearC, CATCH_TYPE, GEAR_GROUP = SpcGearGrp)]
+  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, STOCK = Stock, CATCH_TYPE, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
 
   return(
     dcast.data.table(
       summary,
-      CATCH_TYPE + GEAR_GROUP ~ YEAR,
+      CATCH_TYPE + STOCK + PARTY_STATUS + FLAG ~ YEAR,
       fun.aggregate = sum,
       value.var = "CATCH",
-      fill = 0
+      fill = fill
     )
   )
 }
 
-prepare_t1nc_table_CPCs = function(t1nc_data) {
-  t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
+prepare_t1nc_table_all = function(t1nc_data, fill = NA) {
+  summary_1 = prepare_t1nc_table_global(t1nc_data, fill)
+  summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
 
-  summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 0)), keyby = .(YEAR = YearC, CATCH_TYPE, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
+  summary_2 = prepare_t1nc_table_gears (t1nc_data, fill)
+  summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
 
-  return(
-    dcast.data.table(
-      summary,
-      CATCH_TYPE + PARTY_STATUS + FLAG ~ YEAR,
-      fun.aggregate = sum,
-      value.var = "CATCH",
-      fill = 0
-    )
-  )
-}
-
-prepare_t1nc_table_all = function(t1nc_data) {
-  summary_1 = prepare_t1nc_table_global(t1nc_data)
-  summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = NA_character_, COLUMN_3 = summary_1$STOCK_CODE, summary_1[, 2:ncol(summary_1)])
-
-  summary_2 = prepare_t1nc_table_gears (t1nc_data)
-  summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = NA_character_, COLUMN_3 = summary_2$GEAR_GROUP, summary_2[, 3:ncol(summary_2)])
-
-  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data)
-  summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$PARTY_STATUS, COLUMN_3 = summary_3$FLAG, summary_3[, 4:ncol(summary_3)])
+  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data, fill)
+  summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
   summary = rbind(summary_1, summary_2, summary_3)
 
@@ -508,63 +529,24 @@ prepare_t1nc_table_all = function(t1nc_data) {
 #' TBD
 #'
 #' @param t1nc_data TBD
+#' @param fill TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.global = function(t1nc_data) {
-  summary = prepare_t1nc_table_global(t1nc_data)
+t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
+  summary = prepare_t1nc_table_global(t1nc_data, fill)
 
   summary = data.table(TYPE = "TOTAL", summary)
 
-  return(
-    flextable(summary) %>% flextable::set_header_labels(TYPE = "", STOCK_CODE = "") %>%
-      autofit() %>%
-      fix_border_issues()
-  )
-}
-
-#' TBD
-#'
-#' @param t1nc_data TBD
-#' @return TBD
-#' @export
-t1nc.viz.executive_summary.table.gears = function(t1nc_data) {
-  summary = prepare_t1nc_table_gears(t1nc_data)
-
-  last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
-  last_row_by_catch_type[, ROW := cumsum(ROW)]
+  last_row_by_stock = summary[, .(ROW = max(.N)), keyby = .(STOCK)]
+  last_row_by_stock[, ROW := cumsum(ROW)]
 
   return(
-    flextable(summary) %>%
-      flextable::set_header_labels(CATCH_TYPE = "Catch type", GEAR_GROUP = "Gear") %>%
-      flextable::merge_v(j = 1) %>%
-      flextable::valign(j = 1, part = "body", valign = "top") %>%
-      flextable::border(i = last_row_by_catch_type$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      autofit() %>%
-      fix_border_issues()
-  )
-}
-
-#' TBD
-#'
-#' @param t1nc_data TBD
-#' @return TBD
-#' @export
-t1nc.viz.executive_summary.table.CPCs = function(t1nc_data) {
-  summary = prepare_t1nc_table_CPCs(t1nc_data)
-
-  last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
-  last_row_by_catch_type[, ROW := cumsum(ROW)]
-
-  last_row_by_catch_type_party_status = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, PARTY_STATUS)]
-  last_row_by_catch_type_party_status[, ROW := cumsum(ROW)]
-
-  return(
-    flextable(summary) %>%
-      flextable::set_header_labels(CATCH_TYPE = "Catch type", PARTY_STATUS = "Status", FLAG = "Flag") %>%
+    flextable(summary) %>% flextable::set_header_labels(TYPE = "", STOCK = "") %>%
       flextable::merge_v(j = 1:2) %>%
       flextable::valign(j = 1:2, part = "body", valign = "top") %>%
-      flextable::border(i = last_row_by_catch_type$ROW,              j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_row_by_catch_type_party_status$ROW, j = 2:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_stock$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::colformat_double(j = 3:ncol(summary),
+                                  digits = 0, big.mark = "") %>%
       autofit() %>%
       fix_border_issues()
   )
@@ -573,27 +555,80 @@ t1nc.viz.executive_summary.table.CPCs = function(t1nc_data) {
 #' TBD
 #'
 #' @param t1nc_data TBD
+#' @param fill TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all = function(t1nc_data) {
-  summary_1 = prepare_t1nc_table_global(t1nc_data)
-  summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = NA_character_, COLUMN_3 = summary_1$STOCK_CODE, summary_1[, 2:ncol(summary_1)])
+t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
+  summary = prepare_t1nc_table_gears(t1nc_data, fill)
 
-  summary_2 = prepare_t1nc_table_gears (t1nc_data)
-  summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = NA_character_, COLUMN_3 = summary_2$GEAR_GROUP, summary_2[, 3:ncol(summary_2)])
+  last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
+  last_row_by_catch_type[, ROW := cumsum(ROW)]
 
-  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data)
-  summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$PARTY_STATUS, COLUMN_3 = summary_3$FLAG, summary_3[, 4:ncol(summary_3)])
+  last_row_by_catch_type_stock = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, STOCK)]
+  last_row_by_catch_type_stock[, ROW := cumsum(ROW)]
 
-  summary = rbind(summary_1, summary_2, summary_3)
+  return(
+    flextable(summary) %>%
+      flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", GEAR_GROUP = "Gear") %>%
+      flextable::merge_v(j = 1:3) %>%
+      flextable::valign(j = 1:3, part = "body", valign = "top") %>%
+      flextable::border(i = last_row_by_catch_type$ROW,       part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_catch_type_stock$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::colformat_double(j = 4:ncol(summary),
+                                  digits = 0, big.mark = "") %>%
+      autofit() %>%
+      fix_border_issues()
+  )
+}
 
-  summary$COLUMN_1 =
-    factor(
-      summary$COLUMN_1,
-      levels = c("TOTAL", "Landings", "Landings(FP)", "Discards"),
-      labels = c("TOTAL", "Landings", "Landings(FP)", "Discards"),
-      ordered = TRUE
-    )
+#' TBD
+#'
+#' @param t1nc_data TBD
+#' @param fill TBD
+#' @return TBD
+#' @export
+t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
+  summary = prepare_t1nc_table_CPCs(t1nc_data, fill)
+
+  last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
+  last_row_by_catch_type[, ROW := cumsum(ROW)]
+
+  last_row_by_catch_type_stock = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, STOCK)]
+  last_row_by_catch_type_stock[, ROW := cumsum(ROW)]
+
+  last_row_by_catch_type_stock_party_status = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, STOCK, PARTY_STATUS)]
+  last_row_by_catch_type_stock_party_status[, ROW := cumsum(ROW)]
+
+  return(
+    flextable(summary) %>%
+      flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", PARTY_STATUS = "Status", FLAG = "Flag") %>%
+      flextable::merge_v(j = 1:4) %>%
+      flextable::valign(j = 1:4, part = "body", valign = "top") %>%
+      flextable::border(i = last_row_by_catch_type$ROW,                    part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_catch_type_stock$ROW,              part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_catch_type_stock_party_status$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::colformat_double(j = 5:ncol(summary),
+                                  digits = 0, big.mark = "") %>%
+      autofit() %>%
+      fix_border_issues()
+  )
+}
+
+#' TBD
+#'
+#' @param t1nc_data TBD
+#' @param fill TBD
+#' @return TBD
+#' @export
+t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
+  summary_1 = prepare_t1nc_table_global(t1nc_data, fill)
+  summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
+
+  summary_2 = prepare_t1nc_table_gears (t1nc_data, fill)
+  summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
+
+  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data, fill)
+  summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
   last_row_by_column_1 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1)]
   last_row_by_column_1 = rbind(last_row_by_column_1, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1)])
@@ -607,7 +642,29 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data) {
 
   last_row_by_column_1_2[, ROW := cumsum(ROW)]
 
+  last_row_by_column_1_2_3 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)]
+  last_row_by_column_1_2_3 = rbind(last_row_by_column_1_2_3, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)])
+  last_row_by_column_1_2_3 = rbind(last_row_by_column_1_2_3, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)])
+
+  last_row_by_column_1_2_3[, ROW := cumsum(ROW)]
+
+  last_row_by_column_1_2_3_4 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)]
+  last_row_by_column_1_2_3_4 = rbind(last_row_by_column_1_2_3_4, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)])
+  last_row_by_column_1_2_3_4 = rbind(last_row_by_column_1_2_3_4, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)])
+
+  last_row_by_column_1_2_3_4[, ROW := cumsum(ROW)]
+
   last_rows_by_dataset = data.table(ROW = c(nrow(summary_1), nrow(summary_2), nrow(summary_3)))[, ROW := cumsum(ROW)]
+
+  summary = rbind(summary_1, summary_2, summary_3)
+
+  summary$COLUMN_1 =
+    factor(
+      summary$COLUMN_1,
+      levels = c("TOTAL", "Landings", "Landings(FP)", "Discards"),
+      labels = c("TOTAL", "Landings", "Landings(FP)", "Discards"),
+      ordered = TRUE
+    )
 
   summary$COLUMN_2 = as.character(summary$COLUMN_2)
 
@@ -615,28 +672,49 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data) {
     summary[i, COLUMN_2 := paste0(rep(" ", i), collapse = "")]
   }
 
+  summary$COLUMN_3 = as.character(summary$COLUMN_3)
+
+  for(i in which(is.na(summary$COLUMN_3))) {
+    summary[i, COLUMN_3 := paste0(rep(" ", i), collapse = "")]
+  }
+
+  summary$COLUMN_4 = as.character(summary$COLUMN_4)
+
+  for(i in which(is.na(summary$COLUMN_4))) {
+    summary[i, COLUMN_4 := paste0(rep(" ", i), collapse = "")]
+  }
+
+  colormatrix = ifelse(summary == 0, "gray", "white")
+
   return(
     flextable(summary) %>%
-      flextable::set_header_labels(CATCH_TYPE = "Catch type", PARTY_STATUS = "Status", FLAG = "Flag") %>%
+      #flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", PARTY_STATUS = "Status", FLAG = "Flag") %>%
       flextable::bold(i = 1, part = "header") %>%
-      flextable::merge_v (j = 1:3) %>%
-      flextable::valign(j = 1:3, part = "body", valign = "top") %>%
-      flextable::border(i = last_row_by_column_1$ROW,   j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_row_by_column_1_2$ROW, j = 2:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_rows_by_dataset$ROW,   j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 2)) %>%
+      flextable::merge_v (j = 1:4) %>%
+      flextable::valign(j = 1:4, part = "body", valign = "top") %>%
+      flextable::border(i = last_row_by_column_1$ROW,       j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_column_1_2$ROW,     j = 2:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_column_1_2_3$ROW,   j = 3:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      ##flextable::border(i = last_row_by_column_1_2_3_4$ROW, j = 4:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_rows_by_dataset$ROW,       j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 2)) %>%
+      #flextable::bg(bg = colormatrix, part = "body") %>%
+      flextable::bold(bold = summary == 0, part = "body") %>%
+      flextable::colformat_double(j = 5:ncol(summary),
+                                  digits = 0, big.mark = "") %>%
       autofit() %>%
       fix_border_issues() %>%
-      set_header_labels(COLUMN_1 = "", COLUMN_2 = "", COLUMN_3 = "")
+      set_header_labels(COLUMN_1 = "", COLUMN_2 = "", COLUMN_3 = "", COLUMN_4 = "")
   )
 }
 
 #' TBD
 #'
 #' @param t1nc_data TBD
+#' @param fill TBD
 #' @param output_file TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file) {
+t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fill = NA) {
   species_codes = sort(unique(t1nc_data$Species))
 
   wb = openxlsx2::wb_workbook()
@@ -644,13 +722,13 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file) {
   for(species in species_codes) {
     species_data = copy(REF_SPECIES[CODE == species])
 
-    t1nc_table = prepare_t1nc_table_all(t1nc_data[Species == species])
+    t1nc_table = prepare_t1nc_table_all(t1nc_data[Species == species], fill)
 
-    t1nc_table_global = prepare_t1nc_table_global(t1nc_data[Species == species])
-    t1nc_table_gears  = prepare_t1nc_table_gears (t1nc_data[Species == species])
-    t1nc_table_CPCs   = prepare_t1nc_table_CPCs  (t1nc_data[Species == species])
+    t1nc_table_global = prepare_t1nc_table_global(t1nc_data[Species == species], fill)
+    t1nc_table_gears  = prepare_t1nc_table_gears (t1nc_data[Species == species], fill)
+    t1nc_table_CPCs   = prepare_t1nc_table_CPCs  (t1nc_data[Species == species], fill)
 
-    for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3"))
+    for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
       set(t1nc_table, i = which(duplicated(rleid(t1nc_table[[j]]))), j = j, value = '')
 
     LETTERS_SPACE = append(" ", letters)
@@ -709,10 +787,10 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file) {
     wb$add_data(x = description_es, start_col = 1, start_row = 2)
     wb$add_data(x = description_fr, start_col = 1, start_row = 3)
 
-    wb$add_data(x = t(as.integer(colnames(t1nc_table)[4:ncol(t1nc_table)])), start_col = 4, start_row = 5, col_names = FALSE)
+    wb$add_data(x = t(as.integer(colnames(t1nc_table)[5:ncol(t1nc_table)])), start_col = 5, start_row = 5, col_names = FALSE)
     wb$add_data(x = t1nc_table, start_col = 1, start_row = 6, na.strings = "", col_names = FALSE)
 
-    wb$set_col_widths(cols = c(1, 3), widths = c(13, 25))
+    wb$set_col_widths(cols = c(1, 4), widths = c(13, 25))
 
     # Formatting header (years)
     wb$add_font(dims = "A1:A3", bold = "single")
@@ -723,28 +801,40 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file) {
                   left_border = "", right_border = "")
 
     # Formatting table
-    for(r in which(t1nc_table$COLUMN_1 != ""))
-      wb$add_border(dims = paste0("A", FIRST_ROW - 1 + r, ":", LAST_COL, FIRST_ROW - 1 + r),
-                    top_border = "thin", bottom_border = "",
-                    left_border = "", right_border = "")
+    for(r in which(t1nc_table$COLUMN_3 != ""))
+      wb$add_border(dims = paste0("C", FIRST_ROW - 1 + r, ":", LAST_COL, FIRST_ROW - 1 + r),
+                    top_border  = "thin", bottom_border = "none",
+                    left_border = "none", right_border  = "none")
 
     for(r in which(t1nc_table$COLUMN_2 != ""))
       wb$add_border(dims = paste0("B", FIRST_ROW - 1 + r, ":", LAST_COL, FIRST_ROW - 1 + r),
-                    top_border = "thin", bottom_border = "",
-                    left_border = "", right_border = "")
+                    top_border  = "thin", bottom_border = "none",
+                    left_border = "none", right_border  = "none")
 
-    wb$add_border(dims = paste0("A", FIRST_ROW - 1 + nrow(t1nc_table_global),                          ":", LAST_COL, FIRST_ROW - 1 + nrow(t1nc_table_global)),
-                  bottom_border = "thick", top_border = "",
-                  left_border = "", right_border = "")
+    for(r in which(t1nc_table$COLUMN_1 != ""))
+      wb$add_border(dims = paste0("A", FIRST_ROW - 1 + r, ":", LAST_COL, FIRST_ROW - 1 + r),
+                    top_border  = "thin", bottom_border = "none",
+                    left_border = "none", right_border  = "none")
 
-    wb$add_border(dims = paste0("A", FIRST_ROW - 1 + nrow(t1nc_table_global) + nrow(t1nc_table_gears), ":", LAST_COL, FIRST_ROW - 1 + nrow(t1nc_table_global) + nrow(t1nc_table_gears)),
-                  bottom_border = "thick", top_border = "",
-                  left_border = "", right_border = "")
+    wb$add_border(dims = paste0("A", FIRST_ROW + nrow(t1nc_table_global),                          ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global)),
+                  top_border  = "thick", bottom_border = "none",
+                  left_border = "none",  right_border  = "none")
+
+    wb$add_border(dims = paste0("A", FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears), ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears)),
+                  top_border  = "thick", bottom_border = "none",
+                  left_border = "none", right_border   = "none")
 
     wb$add_border(dims = paste0("A", FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs), ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs)),
-                  bottom_border = "", top_border = "thick",
-                  left_border = "", right_border = "")
+                  top_border  = "thick", bottom_border = "none",
+                  left_border = "none", right_border   = "none")
   }
+
+  value_dims = paste0("E", FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
+
+  wb$add_numfmt(dims = value_dims, numfmt = "0")
+
+  wb$add_dxfs_style(name = "zeroValued", text_bold = TRUE)
+  wb$add_conditional_formatting(dims = value_dims, rule = "=0", style = "zeroValued")
 
   wb$set_active_sheet(species_codes[1])
 
