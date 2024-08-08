@@ -540,10 +540,14 @@ t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
   last_row_by_stock = summary[, .(ROW = max(.N)), keyby = .(STOCK)]
   last_row_by_stock[, ROW := cumsum(ROW)]
 
+  for(j in c("STOCK"))
+    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+
   return(
     flextable(summary) %>% flextable::set_header_labels(TYPE = "", STOCK = "") %>%
-      flextable::merge_v(j = 1:2) %>%
-      flextable::valign(j = 1:2, part = "body", valign = "top") %>%
+      flextable::merge_v(j = 1) %>%
+      #flextable::merge_v(j = 1:2) %>%
+      #flextable::valign(j = 1:2, part = "body", valign = "top") %>%
       flextable::border(i = last_row_by_stock$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::colformat_double(j = 3:ncol(summary),
                                   digits = 0, big.mark = "") %>%
@@ -567,11 +571,14 @@ t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
   last_row_by_catch_type_stock = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, STOCK)]
   last_row_by_catch_type_stock[, ROW := cumsum(ROW)]
 
+  for(j in c("CATCH_TYPE", "STOCK", "GEAR_GROUP"))
+    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+
   return(
     flextable(summary) %>%
       flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", GEAR_GROUP = "Gear") %>%
-      flextable::merge_v(j = 1:3) %>%
-      flextable::valign(j = 1:3, part = "body", valign = "top") %>%
+      #flextable::merge_v(j = 1:3) %>%
+      #flextable::valign(j = 1:3, part = "body", valign = "top") %>%
       flextable::border(i = last_row_by_catch_type$ROW,       part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::border(i = last_row_by_catch_type_stock$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::colformat_double(j = 4:ncol(summary),
@@ -599,11 +606,14 @@ t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
   last_row_by_catch_type_stock_party_status = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE, STOCK, PARTY_STATUS)]
   last_row_by_catch_type_stock_party_status[, ROW := cumsum(ROW)]
 
+  for(j in c("CATCH_TYPE", "STOCK", "PARTY_STATUS", "FLAG"))
+    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+
   return(
     flextable(summary) %>%
       flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", PARTY_STATUS = "Status", FLAG = "Flag") %>%
-      flextable::merge_v(j = 1:4) %>%
-      flextable::valign(j = 1:4, part = "body", valign = "top") %>%
+      #flextable::merge_v(j = 1:4) %>%
+      #flextable::valign(j = 1:4, part = "body", valign = "top") %>%
       flextable::border(i = last_row_by_catch_type$ROW,                    part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::border(i = last_row_by_catch_type_stock$ROW,              part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::border(i = last_row_by_catch_type_stock_party_status$ROW, part = "body", border.bottom = fp_border_default(width = 1)) %>%
@@ -658,6 +668,9 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
 
   summary = rbind(summary_1, summary_2, summary_3)
 
+  for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
+    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+
   summary$COLUMN_1 =
     factor(
       summary$COLUMN_1,
@@ -666,22 +679,24 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
       ordered = TRUE
     )
 
-  summary$COLUMN_2 = as.character(summary$COLUMN_2)
+  if(FALSE) { # Not necessary anymore
+    summary$COLUMN_2 = as.character(summary$COLUMN_2)
 
-  for(i in which(is.na(summary$COLUMN_2))) {
-    summary[i, COLUMN_2 := paste0(rep(" ", i), collapse = "")]
-  }
+    for(i in which(is.na(summary$COLUMN_2))) {
+      summary[i, COLUMN_2 := paste0(rep(" ", i), collapse = "")]
+    }
 
-  summary$COLUMN_3 = as.character(summary$COLUMN_3)
+    summary$COLUMN_3 = as.character(summary$COLUMN_3)
 
-  for(i in which(is.na(summary$COLUMN_3))) {
-    summary[i, COLUMN_3 := paste0(rep(" ", i), collapse = "")]
-  }
+    for(i in which(is.na(summary$COLUMN_3))) {
+      summary[i, COLUMN_3 := paste0(rep(" ", i), collapse = "")]
+    }
 
-  summary$COLUMN_4 = as.character(summary$COLUMN_4)
+    summary$COLUMN_4 = as.character(summary$COLUMN_4)
 
-  for(i in which(is.na(summary$COLUMN_4))) {
-    summary[i, COLUMN_4 := paste0(rep(" ", i), collapse = "")]
+    for(i in which(is.na(summary$COLUMN_4))) {
+      summary[i, COLUMN_4 := paste0(rep(" ", i), collapse = "")]
+    }
   }
 
   colormatrix = ifelse(summary == 0, "gray", "white")
@@ -690,8 +705,8 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
     flextable(summary) %>%
       #flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", PARTY_STATUS = "Status", FLAG = "Flag") %>%
       flextable::bold(i = 1, part = "header") %>%
-      flextable::merge_v (j = 1:4) %>%
-      flextable::valign(j = 1:4, part = "body", valign = "top") %>%
+      #flextable::merge_v (j = 1:4) %>%
+      #flextable::valign(j = 1:4, part = "body", valign = "top") %>%
       flextable::border(i = last_row_by_column_1$ROW,       j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::border(i = last_row_by_column_1_2$ROW,     j = 2:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
       flextable::border(i = last_row_by_column_1_2_3$ROW,   j = 3:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
@@ -729,7 +744,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fil
     t1nc_table_CPCs   = prepare_t1nc_table_CPCs  (t1nc_data[Species == species], fill)
 
     for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
-      set(t1nc_table, i = which(duplicated(rleid(t1nc_table[[j]]))), j = j, value = '')
+      set(t1nc_table, i = which(duplicated(rleid(t1nc_table[[j]]))), j = j, value = "")
 
     LETTERS_SPACE = append(" ", letters)
 
