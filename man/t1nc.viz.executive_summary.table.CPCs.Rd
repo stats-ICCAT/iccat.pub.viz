@@ -4,10 +4,12 @@
 \alias{t1nc.viz.executive_summary.table.CPCs}
 \title{TBD}
 \usage{
-t1nc.viz.executive_summary.table.CPCs(t1nc_data)
+t1nc.viz.executive_summary.table.CPCs(t1nc_data, fill = NA)
 }
 \arguments{
 \item{t1nc_data}{TBD}
+
+\item{fill}{TBD}
 }
 \value{
 TBD

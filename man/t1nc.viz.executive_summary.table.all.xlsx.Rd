@@ -4,12 +4,14 @@
 \alias{t1nc.viz.executive_summary.table.all.xlsx}
 \title{TBD}
 \usage{
-t1nc.viz.executive_summary.table.all.xlsx(t1nc_data, output_file)
+t1nc.viz.executive_summary.table.all.xlsx(t1nc_data, output_file, fill = NA)
 }
 \arguments{
 \item{t1nc_data}{TBD}
 
 \item{output_file}{TBD}
+
+\item{fill}{TBD}
 }
 \value{
 TBD
