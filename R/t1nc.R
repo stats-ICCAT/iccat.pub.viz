@@ -631,45 +631,36 @@ t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
 #' @return TBD
 #' @export
 t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
-  summary_1 = prepare_t1nc_table_global(t1nc_data, fill)
-  summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
+  species_codes = sort(unique(t1nc_data$Species))
 
-  summary_2 = prepare_t1nc_table_gears (t1nc_data, fill)
-  summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
+  summary = NULL
 
-  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data, fill)
-  summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
+  for(species in species_codes) {
+    t1nc_data_s = t1nc_data[Species == species]
 
-  last_row_by_column_1 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1)]
-  last_row_by_column_1 = rbind(last_row_by_column_1, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1)])
-  last_row_by_column_1 = rbind(last_row_by_column_1, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1)])
+    summary_1 = prepare_t1nc_table_global(t1nc_data_s, fill)
+    summary_1 = data.table(SPECIES = species, TYPE = "GLOBAL", COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
 
-  last_row_by_column_1[, ROW := cumsum(ROW)]
+    summary_2 = prepare_t1nc_table_gears (t1nc_data_s, fill)
+    summary_2 = data.table(SPECIES = species, TYPE = "GEARS", COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
 
-  last_row_by_column_1_2 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2)]
-  last_row_by_column_1_2 = rbind(last_row_by_column_1_2, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2)])
-  last_row_by_column_1_2 = rbind(last_row_by_column_1_2, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2)])
+    summary_3 = prepare_t1nc_table_CPCs  (t1nc_data_s, fill)
+    summary_3 = data.table(SPECIES = species, TYPE = "CPCS", COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
-  last_row_by_column_1_2[, ROW := cumsum(ROW)]
+    if(is.null(summary)) {
+      summary = rbind(summary_1, summary_2, summary_3)
+    } else {
+      summary = rbind(summary, rbind(summary_1, summary_2, summary_3))
+    }
+  }
 
-  last_row_by_column_1_2_3 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)]
-  last_row_by_column_1_2_3 = rbind(last_row_by_column_1_2_3, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)])
-  last_row_by_column_1_2_3 = rbind(last_row_by_column_1_2_3, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3)])
-
-  last_row_by_column_1_2_3[, ROW := cumsum(ROW)]
-
-  last_row_by_column_1_2_3_4 = summary_1[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)]
-  last_row_by_column_1_2_3_4 = rbind(last_row_by_column_1_2_3_4, summary_2[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)])
-  last_row_by_column_1_2_3_4 = rbind(last_row_by_column_1_2_3_4, summary_3[, .(ROW = max(.N)), keyby = .(COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)])
-
-  last_row_by_column_1_2_3_4[, ROW := cumsum(ROW)]
-
-  last_rows_by_dataset = data.table(ROW = c(nrow(summary_1), nrow(summary_2), nrow(summary_3)))[, ROW := cumsum(ROW)]
-
-  summary = rbind(summary_1, summary_2, summary_3)
-
-  for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
-    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+  summary$TYPE =
+    factor(
+      summary$TYPE,
+      levels = c("GLOBAL", "GEARS", "CPCS"),
+      labels = c("GLOBAL", "GEARS", "CPCS"),
+      ordered = TRUE
+    )
 
   summary$COLUMN_1 =
     factor(
@@ -679,46 +670,73 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
       ordered = TRUE
     )
 
-  if(FALSE) { # Not necessary anymore
-    summary$COLUMN_2 = as.character(summary$COLUMN_2)
+  last_row_by_species = summary[, .(ROW = max(.N)), keyby = .(SPECIES)][order(SPECIES, ROW)]
+  last_row_by_species[, ROW := cumsum(ROW)]
 
-    for(i in which(is.na(summary$COLUMN_2))) {
-      summary[i, COLUMN_2 := paste0(rep(" ", i), collapse = "")]
-    }
+  last_row_by_species_ds = summary[, .(ROW = max(.N)), keyby = .(SPECIES, TYPE)][order(SPECIES, TYPE, ROW)]
+  last_row_by_species_ds[, ROW := cumsum(ROW)]
 
-    summary$COLUMN_3 = as.character(summary$COLUMN_3)
+  last_row_by_species_ds_column_1 = summary[, .(ROW = max(.N)), keyby = .(SPECIES, TYPE, COLUMN_1)][order(SPECIES, TYPE, COLUMN_1, ROW)]
+  last_row_by_species_ds_column_1[, ROW := cumsum(ROW)]
 
-    for(i in which(is.na(summary$COLUMN_3))) {
-      summary[i, COLUMN_3 := paste0(rep(" ", i), collapse = "")]
-    }
+  last_row_by_species_ds_column_1_2 = summary[, .(ROW = max(.N)), keyby = .(SPECIES, TYPE, COLUMN_1, COLUMN_2)][order(SPECIES, TYPE, COLUMN_1, COLUMN_2, ROW)]
+  last_row_by_species_ds_column_1_2[, ROW := cumsum(ROW)]
 
-    summary$COLUMN_4 = as.character(summary$COLUMN_4)
+  last_row_by_species_ds_column_1_2_3 = summary[, .(ROW = max(.N)), keyby = .(SPECIES, TYPE, COLUMN_1, COLUMN_2, COLUMN_3)][order(SPECIES, TYPE, COLUMN_1, COLUMN_2, COLUMN_3, ROW)]
+  last_row_by_species_ds_column_1_2_3[, ROW := cumsum(ROW)]
 
-    for(i in which(is.na(summary$COLUMN_4))) {
-      summary[i, COLUMN_4 := paste0(rep(" ", i), collapse = "")]
-    }
+  last_row_by_species_ds_column_1_2_3_4 = summary[, .(ROW = max(.N)), keyby = .(SPECIES, TYPE, COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4)][order(SPECIES, TYPE, COLUMN_1, COLUMN_2, COLUMN_3, COLUMN_4, ROW)]
+  last_row_by_species_ds_column_1_2_3_4[, ROW := cumsum(ROW)]
+
+  for(j in c("SPECIES", "COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
+    set(summary, i = which(duplicated(rleid(summary[[j]]))), j = j, value = "")
+
+  summary$TYPE = NULL
+
+  num_species = length(species_codes)
+
+  SP_COL                            = 1
+  DS_COL                            = 2
+  DS_COLUMN_1_COL                   = 2
+  DS_COLUMN_1_COLUMN_2_COL          = 3
+  DS_COLUMN_1_COLUMN_2_COLUMN_3_COL = 4
+
+  DATA_COL = 6
+
+  if(num_species == 1) {
+    summary$SPECIES = NULL
+
+    DS_COLUMN_1_COL                   = DS_COLUMN_1_COL - 1
+    DS_COLUMN_1_COLUMN_2_COL          = DS_COLUMN_1_COLUMN_2_COL - 1
+    DS_COLUMN_1_COLUMN_2_COLUMN_3_COL = DS_COLUMN_1_COLUMN_2_COLUMN_3_COL - 1
+
+    DATA_COL = 5
   }
 
-  colormatrix = ifelse(summary == 0, "gray", "white")
-
-  return(
+  result =
     flextable(summary) %>%
-      #flextable::set_header_labels(CATCH_TYPE = "Catch type", STOCK = "Stock", PARTY_STATUS = "Status", FLAG = "Flag") %>%
       flextable::bold(i = 1, part = "header") %>%
-      #flextable::merge_v (j = 1:4) %>%
-      #flextable::valign(j = 1:4, part = "body", valign = "top") %>%
-      flextable::border(i = last_row_by_column_1$ROW,       j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_row_by_column_1_2$ROW,     j = 2:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_row_by_column_1_2_3$ROW,   j = 3:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      ##flextable::border(i = last_row_by_column_1_2_3_4$ROW, j = 4:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
-      flextable::border(i = last_rows_by_dataset$ROW,       j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 2)) %>%
-      #flextable::bg(bg = colormatrix, part = "body") %>%
+      flextable::border(i = last_row_by_species_ds_column_1_2_3$ROW,   j = DS_COLUMN_1_COLUMN_2_COLUMN_3_COL:ncol(summary), part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_species_ds_column_1_2$ROW,     j = DS_COLUMN_1_COLUMN_2_COL:ncol(summary),          part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_species_ds_column_1$ROW,       j = DS_COLUMN_1_COL:ncol(summary),                   part = "body", border.bottom = fp_border_default(width = 1)) %>%
+      flextable::border(i = last_row_by_species_ds$ROW,                j = DS_COLUMN_1_COL:ncol(summary),                   part = "body", border.bottom = fp_border_default(width = 2))
+
+  if(num_species > 1)
+    result = result %>%
+      flextable::border(i = last_row_by_species$ROW,                   j = SP_COL:ncol(summary), part = "body", border.bottom = fp_border_default(width = 3))
+
+  result = result %>%
+      flextable::border(i = nrow(summary),                             j = 1:ncol(summary), part = "body", border.bottom = fp_border_default(width = 2)) %>%
       flextable::bold(bold = summary == 0, part = "body") %>%
-      flextable::colformat_double(j = 5:ncol(summary),
+      flextable::colformat_double(j = DATA_COL:ncol(summary),
                                   digits = 0, big.mark = "") %>%
+      flextable::valign(j = 1:(DS_COLUMN_1_COLUMN_2_COLUMN_3_COL + 1), valign = "top") %>%
       autofit() %>%
       fix_border_issues() %>%
-      set_header_labels(COLUMN_1 = "", COLUMN_2 = "", COLUMN_3 = "", COLUMN_4 = "")
+      set_header_labels(SPECIES = "", COLUMN_1 = "", COLUMN_2 = "", COLUMN_3 = "", COLUMN_4 = "")
+
+  return(
+    result
   )
 }
 
