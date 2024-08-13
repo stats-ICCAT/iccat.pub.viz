@@ -1040,7 +1040,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
   wb$add_numfmt(dims = value_dims, numfmt = "0")
 
   if(legacy_style) {
-    value_dims = paste0(LAST_COL, FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
+    value_dims = paste0(LAST_COL, FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(summary) - 1)
   }
 
   wb$add_conditional_formatting(dims = value_dims, rule = "=0", style = "zeroValued")
