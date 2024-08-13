@@ -732,10 +732,11 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
 #'
 #' @param t1nc_data TBD
 #' @param output_file TBD
+#' @param version TBD
 #' @param fill TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fill = NA) {
+t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA) {
   species_codes = sort(unique(t1nc_data$Species))
 
   wb = openxlsx2::wb_workbook()
@@ -777,7 +778,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fil
         species_data$NAME_EN,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") by area, gear, and flag (v0, ",
+        ") by area, gear, and flag (v", version,
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -789,7 +790,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fil
         species_data$NAME_ES,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") por area, arte y bandera (v0, ",
+        ") por area, arte y bandera (v", version,
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -801,7 +802,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fil
         species_data$NAME_FR,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") par zone, engin et pavillon (v0, ",
+        ") par zone, engin et pavillon (v", version,
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -868,10 +869,11 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, fil
 #' @param species_group_code TBD
 #' @param species_group_descriptions TBD
 #' @param output_file TBD
+#' @param version TBD
 #' @param fill TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, fill = NA) {
+t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA) {
   wb = openxlsx2::wb_workbook()
 
   wb$add_dxfs_style(name = "zeroValued", text_bold = TRUE)
@@ -943,7 +945,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_EN,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
                       paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "by area, gear, and flag (v0, ",
+      "by area, gear, and flag (v", version,
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
@@ -955,7 +957,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_ES,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
              paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "por area, arte y bandera (v0, ",
+      "por area, arte y bandera (v", version,
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
@@ -967,7 +969,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_FR,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
              paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "par zone, engin et pavillon (v0, ",
+      "par zone, engin et pavillon (v", version,
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
