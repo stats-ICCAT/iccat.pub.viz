@@ -734,9 +734,13 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
 #' @param output_file TBD
 #' @param version TBD
 #' @param fill TBD
+#' @param legacy_style TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA) {
+t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA, legacy_style = FALSE) {
+  if(legacy_style)
+    log_warn("Applying legacy style to output table...")
+
   species_codes = sort(unique(t1nc_data$Species))
 
   wb = openxlsx2::wb_workbook()
@@ -746,7 +750,11 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
   for(species in species_codes) {
     species_data = copy(REF_SPECIES[CODE == species])
 
-    t1nc_table = prepare_t1nc_table_all(t1nc_data[Species == species], fill)
+    t1nc_table = prepare_t1nc_table_all(t1nc_data[Species == species], fill = ifelse(legacy_style, NA, fill))
+
+    if(legacy_style) {
+      t1nc_table[, 5:(ncol(t1nc_table) - 1)] = replace(t1nc_table[, 5:(ncol(t1nc_table) - 1)], is.na(t1nc_table[, 5:(ncol(t1nc_table) - 1)]), 0)
+    }
 
     t1nc_table_global = prepare_t1nc_table_global(t1nc_data[Species == species], fill)
     t1nc_table_gears  = prepare_t1nc_table_gears (t1nc_data[Species == species], fill)
@@ -778,7 +786,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_EN,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") by area, gear, and flag (v", version,
+        ") by area, gear, and flag (v", version, " ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -790,7 +798,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_ES,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") por area, arte y bandera (v", version,
+        ") por area, arte y bandera (v", version, " ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -802,7 +810,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_FR,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") par zone, engin et pavillon (v", version,
+        ") par zone, engin et pavillon (v", version, " ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -855,6 +863,11 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
     value_dims = paste0("E", FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
 
     wb$add_numfmt(dims = value_dims, numfmt = "0")
+
+    if(legacy_style) {
+      value_dims = paste0(LAST_COL, FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
+    }
+
     wb$add_conditional_formatting(dims = value_dims, rule = "=0", style = "zeroValued")
   }
 
@@ -871,10 +884,14 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
 #' @param output_file TBD
 #' @param version TBD
 #' @param fill TBD
+#' @param legacy_style TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA) {
-  wb = openxlsx2::wb_workbook()
+t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA, legacy_style = FALSE) {
+  if(legacy_style)
+    log_warn("Applying legacy style to output table...")
+
+    wb = openxlsx2::wb_workbook()
 
   wb$add_dxfs_style(name = "zeroValued", text_bold = TRUE)
 
@@ -922,6 +939,12 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
 
   summary$TYPE = NULL
 
+  if(legacy_style) {
+    if(legacy_style) {
+      summary[, 6:(ncol(summary) - 1)] = replace(summary[, 6:(ncol(summary) - 1)], is.na(summary[, 6:(ncol(summary) - 1)]), 0)
+    }
+  }
+
   LETTERS_SPACE = append(" ", letters)
 
   ALL_COLUMNS = CJ(LETTERS_SPACE, letters)
@@ -945,7 +968,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_EN,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
                       paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "by area, gear, and flag (v", version,
+      "by area, gear, and flag (v", version, " ",
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
@@ -957,7 +980,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_ES,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
              paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "por area, arte y bandera (v", version,
+      "por area, arte y bandera (v", version, " ",
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
@@ -969,7 +992,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
       species_group_descriptions$NAME_FR,
       ifelse(!is.null(species_group_descriptions$SCIENTIFIC_NAME),
              paste0(" (", species_group_descriptions$SCIENTIFIC_NAME, ") "), " "),
-      "par zone, engin et pavillon (v", version,
+      "par zone, engin et pavillon (v", version, " ",
       format(Sys.Date(), "%Y-%m-%d"),
       ")"
     )
@@ -1015,6 +1038,11 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
   value_dims = paste0("F", FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(summary) - 1)
 
   wb$add_numfmt(dims = value_dims, numfmt = "0")
+
+  if(legacy_style) {
+    value_dims = paste0(LAST_COL, FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
+  }
+
   wb$add_conditional_formatting(dims = value_dims, rule = "=0", style = "zeroValued")
 
   wb$set_active_sheet(species_group_code)

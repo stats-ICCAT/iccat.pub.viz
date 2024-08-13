@@ -8,7 +8,8 @@ t1nc.viz.executive_summary.table.all.xlsx(
   t1nc_data,
   output_file,
   version = 0,
-  fill = NA
+  fill = NA,
+  legacy_style = FALSE
 )
 }
 \arguments{
@@ -19,6 +20,8 @@ t1nc.viz.executive_summary.table.all.xlsx(
 \item{version}{TBD}
 
 \item{fill}{TBD}
+
+\item{legacy_style}{TBD}
 }
 \value{
 TBD

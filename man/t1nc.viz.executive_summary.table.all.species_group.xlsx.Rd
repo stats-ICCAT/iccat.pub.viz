@@ -10,7 +10,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
   species_group_descriptions,
   output_file,
   version = 0,
-  fill = NA
+  fill = NA,
+  legacy_style = FALSE
 )
 }
 \arguments{
@@ -23,6 +24,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
 \item{version}{TBD}
 
 \item{fill}{TBD}
+
+\item{legacy_style}{TBD}
 
 \item{t1nc_data}{TBD}
 }
