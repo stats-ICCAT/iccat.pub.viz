@@ -100,6 +100,7 @@ catalogue.viz.table.legend.colours = function() {
 #' TBD
 #'
 #' @param catalogue_data TBD
+#' @param show_catches_gradient TBD
 #' @param remove_species TBD
 #' @param remove_stock TBD
 #' @param truncate_years TBD
@@ -208,4 +209,145 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
   DEBUG(paste0("Finished building catalog table in ", end - start))
 
   return(FT)
+}
+
+#' TBD
+#'
+#' @param filtered_catalogue_data TBD
+#' @param workbook TBD
+#' @param pretty_print_catches TBD
+#' @param cutoff_percentage TBD
+#' @param score TBD
+#' @param table_number TBD
+#' @param stock TBD
+#' @return TBD
+#' @export
+catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, score, table_number, stock) {
+  DEBUG("Appending catalog data...")
+
+  workbook$add_worksheet(stock)
+  workbook$set_active_sheet(stock)
+
+  filtered_catalogue_data = copy(filtered_catalogue_data)
+
+  row_cutoff = min(which(filtered_catalogue_data$PercCum >= cutoff_percentage))
+
+  perc_quantiles     = quantile(filtered_catalogue_data$Perc)
+  perc_cum_quantiles = quantile(filtered_catalogue_data$PercCum)
+
+  min_perc_cum = min(filtered_catalogue_data$PercCum)
+  max_perc_cum = max(filtered_catalogue_data$PercCum)
+
+  filtered_catalogue_data = filtered_catalogue_data[seq(2, nrow(filtered_catalogue_data), 2), `:=`(Perc = NA, PercCum = NA, TotCatches = NA)]
+
+  filtered_catalogue_data_rev = filtered_catalogue_data[, .(Species, Stock, Status, FlagName, GearGrp, DSet)]
+  filtered_catalogue_data_rev = cbind(filtered_catalogue_data_rev, filtered_catalogue_data[, 11:ncol(filtered_catalogue_data)])
+  filtered_catalogue_data_rev = cbind(filtered_catalogue_data_rev, filtered_catalogue_data[, .(Rank = FisheryRank, `%` = Perc, `%cum` = PercCum, `Σ`= TotCatches)])
+
+  workbook$add_dxfs_style(name = "red",       bg_fill = wb_color("#FF0000"))
+  workbook$add_dxfs_style(name = "yellow",    bg_fill = wb_color("#FFFF00"))
+  workbook$add_dxfs_style(name = "green",     bg_fill = wb_color("#92D050"))
+  workbook$add_dxfs_style(name = "darkgreen", bg_fill = wb_color("#00B050"))
+
+  workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color("#FF0000"))
+
+  workbook$merge_cells(dims = "A1:D1")
+  workbook$add_data(dims = "A1", x = paste0("Table ", table_number, ". ", stock, " stock"))
+  workbook$add_font(dims = "A1", bold = "single")
+
+  workbook$add_data(dims = "A3", x = "Score")
+  workbook$add_data(dims = "B3", x = score)
+  workbook$add_font(dims = "A3:B3", bold = "single")
+  workbook$add_fill(dims = "A3:B3", color = wb_color("#FDE9D9"))
+
+  workbook$add_numfmt(dims = "B3", numfmt = "#0.00") # Two decimal digits for the score
+
+  workbook$merge_cells(dims = "E2:F2")
+  workbook$add_data(dims = "E2", x = "T1 Total")
+  workbook$add_cell_style(dims = "E2", horizontal = "center")
+
+  catches =
+    data.frame(
+      as.list(
+        sapply(filtered_catalogue_data_rev[, 7:(ncol(filtered_catalogue_data_rev) - 4)],
+               function(x) { sum(ifelse(x == "-1", 0, as.numeric(gsub(",", "", x))), na.rm = TRUE) })))
+
+  workbook$add_data(x = catches, start_col = 7, start_row = 2, na.strings = "", col_names = FALSE)
+
+  # Formats annual catch value for each row with (or without) a thousands separator
+  workbook$add_numfmt(dims = wb_dims(rows = 2, cols = 7:(ncol(filtered_catalogue_data_rev) - 4)), numfmt = ifelse(pretty_print_catches, "#,##0", "0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+
+  workbook$add_border(dims = wb_dims(rows = 2, cols = 5:(ncol(filtered_catalogue_data_rev) - 4)),
+                top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
+
+  workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), bold = "single")
+  workbook$add_border(dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)),
+                top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
+
+  workbook$add_border(dims = wb_dims(rows = 4 + row_cutoff, cols = ncol(filtered_catalogue_data_rev) - 3),
+                top_border = "thin", bottom_border = "", left_border = "", right_border = "")
+
+  workbook$add_cell_style(dims = wb_dims(rows = 4, cols = 7:ncol(filtered_catalogue_data_rev)), horizontal = "center")
+
+  data_dims = wb_dims(rows = 5:( 5 + nrow(filtered_catalogue_data_rev) ), cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
+
+  workbook$add_cell_style(dims = data_dims, horizontal = "right")
+
+  workbook$add_conditional_formatting(dims = paste0("E5:E", 5 + nrow(filtered_catalogue_data_rev)), rule = "=\"UN\"",  style = "UNCL_gear")
+
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"-1\"",  style = "red")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"a\"",   style = "yellow")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"b\"",   style = "yellow")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"c\"",   style = "yellow")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"bc\"",  style = "yellow")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ab\"",  style = "green")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ac\"",  style = "green")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"abc\"", style = "darkgreen")
+
+  perc_col     = ncol(filtered_catalogue_data_rev) - 2
+  perc_cum_col = ncol(filtered_catalogue_data_rev) - 1
+
+  workbook$add_conditional_formatting(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_col),
+                                      style = c("#F8696B", "#FFEB84", "#63BE7B"),
+                                      rule = c(perc_quantiles["0%"][[1]], perc_quantiles["75%"][[1]], perc_quantiles["100%"][[1]]),
+                                      type = "colorScale")
+
+  workbook$add_conditional_formatting(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_cum_col),
+                                      style = c("#63BE7B", "#FFFFFF", "#F8696B"),
+                                      rule = c(perc_cum_quantiles["0%"][[1]], perc_cum_quantiles["50%"][[1]], perc_cum_quantiles["100%"][[1]]),
+                                      type = "colorScale")
+
+  workbook$add_ignore_error(dims = data_dims, number_stored_as_text = TRUE)
+  workbook$add_ignore_error(dims = wb_dims(rows = 4, cols = 7:( ncol(filtered_catalogue_data_rev) - 4 )), number_stored_as_text = TRUE)
+
+  # Extracts all rows (from the catalog) containing catch values and converts the columns into numeric values
+  filtered_catalogue_data_rev_num = filtered_catalogue_data_rev[seq(1, nrow(filtered_catalogue_data_rev), 2)]
+  to_numeric = colnames(filtered_catalogue_data_rev_num[, 7:(ncol(filtered_catalogue_data_rev_num) - 4)])
+  filtered_catalogue_data_rev_num = filtered_catalogue_data_rev_num[, (to_numeric) := lapply(.SD, as.numeric), .SDcols = to_numeric]
+
+  filtered_catalogue_data_rev_txt = filtered_catalogue_data_rev[seq(2, nrow(filtered_catalogue_data_rev), 2)]
+
+  # Writes the table header...
+  workbook$add_data(x = colnames(filtered_catalogue_data_rev_num), start_col = 1, start_row = 4)
+
+  # Writes all numeric values
+  for(num_row in 1:nrow(filtered_catalogue_data_rev_num))
+    workbook$add_data(x = filtered_catalogue_data_rev_num[num_row], start_col = 1, start_row = 5 + ( num_row - 1 ) * 2, na.strings = "", col_names = FALSE)
+
+  # Writes all text values
+  for(num_row in 1:nrow(filtered_catalogue_data_rev_txt))
+    workbook$add_data(x = filtered_catalogue_data_rev_txt[num_row], start_col = 1, start_row = 6 + ( num_row - 1 ) * 2, na.strings = "", col_names = FALSE)
+
+  # Formats percentages (and cumulative percentages) with two trailing digits
+  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_col:perc_cum_col), numfmt = "#0.00")  # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+
+  # Formats total catch value for each row with a thousands separator
+  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = ncol(filtered_catalogue_data_rev)), numfmt = ifelse(pretty_print_catches, "#,##0", "###0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+
+  # Formats all catch value with a thousands separator
+  workbook$add_numfmt(dims = data_dims, numfmt = ifelse(pretty_print_catches, "#,##0", "0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+
+  workbook$set_col_widths(cols = 4, widths = 26.64)
+
+  return(workbook)
 }

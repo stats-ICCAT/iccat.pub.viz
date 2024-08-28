@@ -424,7 +424,7 @@ standardize = function(t1nc_data) {
   )
 }
 
-prepare_t1nc_table_global = function(t1nc_data, fill = NA) {
+prepare_t1nc_executive_summary_table_global = function(t1nc_data, fill = NA) {
   t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(STOCK_CODE = Stock)]
 
   summary     = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, STOCK = Stock)]
@@ -448,7 +448,7 @@ prepare_t1nc_table_global = function(t1nc_data, fill = NA) {
   return(result)
 }
 
-prepare_t1nc_table_stock  = function(t1nc_data, fill = NA) {
+prepare_t1nc_executive_summary_table_stock  = function(t1nc_data, fill = NA) {
   t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock)]
 
   summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, CATCH_TYPE, STOCK = Stock)]
@@ -465,7 +465,7 @@ prepare_t1nc_table_stock  = function(t1nc_data, fill = NA) {
   )
 }
 
-prepare_t1nc_table_gears  = function(t1nc_data, fill = NA) {
+prepare_t1nc_executive_summary_table_gears  = function(t1nc_data, fill = NA) {
   t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock, GEAR_GROUP = SpcGearGrp)]
 
   summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, CATCH_TYPE, STOCK = Stock, GEAR_GROUP = SpcGearGrp)]
@@ -482,7 +482,7 @@ prepare_t1nc_table_gears  = function(t1nc_data, fill = NA) {
   )
 }
 
-prepare_t1nc_table_CPCs   = function(t1nc_data, fill = NA) {
+prepare_t1nc_executive_summary_table_CPCs   = function(t1nc_data, fill = NA) {
   t1nc_data = standardize(t1nc_data)[, TOTAL := sum(Qty_t, na.rm = TRUE), by = .(CATCH_TYPE, STOCK = Stock, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
 
   summary = t1nc_data[CatchTypeCode != "DL" & TOTAL > 0, .(CATCH = round(sum(Qty_t, na.rm = TRUE), 2)), keyby = .(YEAR = YearC, STOCK = Stock, CATCH_TYPE, PARTY_STATUS = PartyStatus, FLAG = FlagName)]
@@ -499,14 +499,14 @@ prepare_t1nc_table_CPCs   = function(t1nc_data, fill = NA) {
   )
 }
 
-prepare_t1nc_table_all = function(t1nc_data, fill = NA) {
-  summary_1 = prepare_t1nc_table_global(t1nc_data, fill)
+prepare_t1nc_executive_summary_table_all = function(t1nc_data, fill = NA) {
+  summary_1 = prepare_t1nc_executive_summary_table_global(t1nc_data, fill)
   summary_1 = data.table(COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
 
-  summary_2 = prepare_t1nc_table_gears (t1nc_data, fill)
+  summary_2 = prepare_t1nc_executive_summary_table_gears (t1nc_data, fill)
   summary_2 = data.table(COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
 
-  summary_3 = prepare_t1nc_table_CPCs  (t1nc_data, fill)
+  summary_3 = prepare_t1nc_executive_summary_table_CPCs  (t1nc_data, fill)
   summary_3 = data.table(COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
   summary = rbind(summary_1, summary_2, summary_3)
@@ -521,7 +521,7 @@ prepare_t1nc_table_all = function(t1nc_data, fill = NA) {
 #' @return TBD
 #' @export
 t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
-  summary = prepare_t1nc_table_global(t1nc_data, fill)
+  summary = prepare_t1nc_executive_summary_table_global(t1nc_data, fill)
 
   summary = data.table(TYPE = "TOTAL", summary)
 
@@ -551,7 +551,7 @@ t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
 #' @return TBD
 #' @export
 t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
-  summary = prepare_t1nc_table_gears(t1nc_data, fill)
+  summary = prepare_t1nc_executive_summary_table_gears(t1nc_data, fill)
 
   last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
   last_row_by_catch_type[, ROW := cumsum(ROW)]
@@ -583,7 +583,7 @@ t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
 #' @return TBD
 #' @export
 t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
-  summary = prepare_t1nc_table_CPCs(t1nc_data, fill)
+  summary = prepare_t1nc_executive_summary_table_CPCs(t1nc_data, fill)
 
   last_row_by_catch_type = summary[, .(ROW = max(.N)), keyby = .(CATCH_TYPE)]
   last_row_by_catch_type[, ROW := cumsum(ROW)]
@@ -626,13 +626,13 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
   for(species in species_codes) {
     t1nc_data_s = t1nc_data[Species == species]
 
-    summary_1 = prepare_t1nc_table_global(t1nc_data_s, fill)
+    summary_1 = prepare_t1nc_executive_summary_table_global(t1nc_data_s, fill)
     summary_1 = data.table(SPECIES = species, TYPE = "GLOBAL", COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
 
-    summary_2 = prepare_t1nc_table_gears (t1nc_data_s, fill)
+    summary_2 = prepare_t1nc_executive_summary_table_gears (t1nc_data_s, fill)
     summary_2 = data.table(SPECIES = species, TYPE = "GEARS", COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
 
-    summary_3 = prepare_t1nc_table_CPCs  (t1nc_data_s, fill)
+    summary_3 = prepare_t1nc_executive_summary_table_CPCs  (t1nc_data_s, fill)
     summary_3 = data.table(SPECIES = species, TYPE = "CPCS", COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
     if(is.null(summary)) {
@@ -750,15 +750,15 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
   for(species in species_codes) {
     species_data = copy(REF_SPECIES[CODE == species])
 
-    t1nc_table = prepare_t1nc_table_all(t1nc_data[Species == species], fill = ifelse(legacy_style, NA, fill))
+    t1nc_table = prepare_t1nc_executive_summary_table_all(t1nc_data[Species == species], fill = ifelse(legacy_style, NA, fill))
 
     if(legacy_style) {
       t1nc_table[, 5:(ncol(t1nc_table) - 1)] = replace(t1nc_table[, 5:(ncol(t1nc_table) - 1)], is.na(t1nc_table[, 5:(ncol(t1nc_table) - 1)]), 0)
     }
 
-    t1nc_table_global = prepare_t1nc_table_global(t1nc_data[Species == species], fill)
-    t1nc_table_gears  = prepare_t1nc_table_gears (t1nc_data[Species == species], fill)
-    t1nc_table_CPCs   = prepare_t1nc_table_CPCs  (t1nc_data[Species == species], fill)
+    t1nc_table_global = prepare_t1nc_executive_summary_table_global(t1nc_data[Species == species], fill)
+    t1nc_table_gears  = prepare_t1nc_executive_summary_table_gears (t1nc_data[Species == species], fill)
+    t1nc_table_CPCs   = prepare_t1nc_executive_summary_table_CPCs  (t1nc_data[Species == species], fill)
 
     for(j in c("COLUMN_1", "COLUMN_2", "COLUMN_3", "COLUMN_4"))
       set(t1nc_table, i = which(duplicated(rleid(t1nc_table[[j]]))), j = j, value = "")
@@ -891,7 +891,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
   if(legacy_style)
     log_warn("Applying legacy style to output table...")
 
-    wb = openxlsx2::wb_workbook()
+  wb = openxlsx2::wb_workbook()
 
   wb$add_dxfs_style(name = "zeroValued", text_bold = TRUE)
 
@@ -902,13 +902,13 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
   for(species in species_codes) {
     t1nc_data_s = filtered_t1nc_data[Species == species]
 
-    summary_1 = prepare_t1nc_table_global(t1nc_data_s, fill)
+    summary_1 = prepare_t1nc_executive_summary_table_global(t1nc_data_s, fill)
     summary_1 = data.table(SPECIES = species, TYPE = "GLOBAL", COLUMN_1 = "TOTAL", COLUMN_2 = summary_1$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = NA_character_, summary_1[, 2:ncol(summary_1)])
 
-    summary_2 = prepare_t1nc_table_gears (t1nc_data_s, fill)
+    summary_2 = prepare_t1nc_executive_summary_table_gears (t1nc_data_s, fill)
     summary_2 = data.table(SPECIES = species, TYPE = "GEARS", COLUMN_1 = summary_2$CATCH_TYPE, COLUMN_2 = summary_2$STOCK, COLUMN_3 = NA_character_, COLUMN_4 = summary_2$GEAR_GROUP, summary_2[, 4:ncol(summary_2)])
 
-    summary_3 = prepare_t1nc_table_CPCs  (t1nc_data_s, fill)
+    summary_3 = prepare_t1nc_executive_summary_table_CPCs  (t1nc_data_s, fill)
     summary_3 = data.table(SPECIES = species, TYPE = "CPCS", COLUMN_1 = summary_3$CATCH_TYPE, COLUMN_2 = summary_3$STOCK, COLUMN_3 = summary_3$PARTY_STATUS, COLUMN_4 = summary_3$FLAG, summary_3[, 5:ncol(summary_3)])
 
     if(is.null(summary)) {

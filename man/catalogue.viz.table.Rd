@@ -20,6 +20,8 @@ catalogue.viz.table(
 \arguments{
 \item{catalogue_data}{TBD}
 
+\item{show_catches_gradient}{TBD}
+
 \item{remove_species}{TBD}
 
 \item{remove_stock}{TBD}
