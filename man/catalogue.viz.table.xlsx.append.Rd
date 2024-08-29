@@ -9,6 +9,7 @@ catalogue.viz.table.xlsx.append(
   workbook,
   pretty_print_catches = FALSE,
   cutoff_percentage = 95,
+  max_percentage = 100,
   score,
   table_number,
   stock
@@ -22,6 +23,8 @@ catalogue.viz.table.xlsx.append(
 \item{pretty_print_catches}{TBD}
 
 \item{cutoff_percentage}{TBD}
+
+\item{max_percentage}{TBD}
 
 \item{score}{TBD}
 

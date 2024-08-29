@@ -217,18 +217,23 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 #' @param workbook TBD
 #' @param pretty_print_catches TBD
 #' @param cutoff_percentage TBD
+#' @param max_percentage TBD
 #' @param score TBD
 #' @param table_number TBD
 #' @param stock TBD
 #' @return TBD
 #' @export
-catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, score, table_number, stock) {
+catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, max_percentage = 100, score, table_number, stock) {
   DEBUG("Appending catalog data...")
+
+  if(max_percentage < cutoff_percentage) stop(paste0("The maximum percentage (", max_percentage, "%) should be higher than the cutoff percentage (", cutoff_percentage, "%)"))
 
   workbook$add_worksheet(stock)
   workbook$set_active_sheet(stock)
 
-  filtered_catalogue_data = copy(filtered_catalogue_data)
+  actual_max_percentage = min(filtered_catalogue_data[PercCum >= max_percentage]$PercCum)
+
+  filtered_catalogue_data = copy(filtered_catalogue_data[PercCum <= actual_max_percentage])
 
   # Identifies the row of the first record exceeding the provided cutoff percentage (95% by default)
   row_cutoff = min(which(filtered_catalogue_data$PercCum >= cutoff_percentage))
