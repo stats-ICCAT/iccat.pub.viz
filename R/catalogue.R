@@ -230,20 +230,22 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   filtered_catalogue_data = copy(filtered_catalogue_data)
 
+  # Identifies the row of the first record exceeding the provided cutoff percentage (95% by default)
   row_cutoff = min(which(filtered_catalogue_data$PercCum >= cutoff_percentage))
 
+  # Calculates the quantiles for the percentage and cumulative percentage values
   perc_quantiles     = quantile(filtered_catalogue_data$Perc)
   perc_cum_quantiles = quantile(filtered_catalogue_data$PercCum)
 
-  min_perc_cum = min(filtered_catalogue_data$PercCum)
-  max_perc_cum = max(filtered_catalogue_data$PercCum)
-
+  # Sets to blank the percentage cumulative percentage, and total catch values every other row
   filtered_catalogue_data = filtered_catalogue_data[seq(2, nrow(filtered_catalogue_data), 2), `:=`(Perc = NA, PercCum = NA, TotCatches = NA)]
 
+  # Prepares the final table binding the strata, the data, and the calculated info
   filtered_catalogue_data_rev = filtered_catalogue_data[, .(Species, Stock, Status, FlagName, GearGrp, DSet)]
   filtered_catalogue_data_rev = cbind(filtered_catalogue_data_rev, filtered_catalogue_data[, 11:ncol(filtered_catalogue_data)])
   filtered_catalogue_data_rev = cbind(filtered_catalogue_data_rev, filtered_catalogue_data[, .(Rank = FisheryRank, `%` = Perc, `%cum` = PercCum, `Σ`= TotCatches)])
 
+  # Creates some custom cell styles
   workbook$add_dxfs_style(name = "red",       bg_fill = wb_color("#FF0000"))
   workbook$add_dxfs_style(name = "yellow",    bg_fill = wb_color("#FFFF00"))
   workbook$add_dxfs_style(name = "green",     bg_fill = wb_color("#92D050"))
@@ -251,6 +253,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color("#FF0000"))
 
+  # Fills some of the expected metadata (table reference, overall score, and total catch value)
   workbook$merge_cells(dims = "A1:D1")
   workbook$add_data(dims = "A1", x = paste0("Table ", table_number, ". ", stock, " stock"))
   workbook$add_font(dims = "A1", bold = "single")
@@ -266,19 +269,25 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_data(dims = "E2", x = "T1 Total")
   workbook$add_cell_style(dims = "E2", horizontal = "center")
 
+  # Calculates total annual catches
   catches =
     data.frame(
       as.list(
         sapply(filtered_catalogue_data_rev[, 7:(ncol(filtered_catalogue_data_rev) - 4)],
-               function(x) { sum(ifelse(x == "-1", 0, as.numeric(gsub(",", "", x))), na.rm = TRUE) })))
+               function(x) { sum(ifelse(x == "-1", 0, as.numeric(gsub(",", "", x))), na.rm = TRUE) }
+        )
+      )
+    )
 
+  # Adds the total annual catches to the workbook
   workbook$add_data(x = catches, start_col = 7, start_row = 2, na.strings = "", col_names = FALSE)
 
   # Formats annual catch value for each row with (or without) a thousands separator
   workbook$add_numfmt(dims = wb_dims(rows = 2, cols = 7:(ncol(filtered_catalogue_data_rev) - 4)), numfmt = ifelse(pretty_print_catches, "#,##0", "0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
 
+  # Styles the workbook content - BEGIN
   workbook$add_border(dims = wb_dims(rows = 2, cols = 5:(ncol(filtered_catalogue_data_rev) - 4)),
-                top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
+                      top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
 
   workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), bold = "single")
   workbook$add_border(dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)),
@@ -292,7 +301,9 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   data_dims = wb_dims(rows = 5:( 5 + nrow(filtered_catalogue_data_rev) ), cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
 
   workbook$add_cell_style(dims = data_dims, horizontal = "right")
+  # Styles the workbook content - END
 
+  # Adds conditional formatting to the workbook - BEGIN
   workbook$add_conditional_formatting(dims = paste0("E5:E", 5 + nrow(filtered_catalogue_data_rev)), rule = "=\"UN\"",  style = "UNCL_gear")
 
   workbook$add_conditional_formatting(dims = data_dims, rule = "=\"-1\"",  style = "red")
@@ -319,16 +330,23 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   workbook$add_ignore_error(dims = data_dims, number_stored_as_text = TRUE)
   workbook$add_ignore_error(dims = wb_dims(rows = 4, cols = 7:( ncol(filtered_catalogue_data_rev) - 4 )), number_stored_as_text = TRUE)
+  # Adds conditional formatting to the workbook - END
 
-  # Extracts all rows (from the catalog) containing catch values and converts the columns into numeric values
+  # As the original data table contains both numbers and text within each data column, by simply writing the table
+  # to Excel we risk the output cells to be interpreted as text, no matter the format we explicitly set for them.
+  # The workaround is to write all numeric rows (every other row) separately from the text rows, so that Openxlsx2
+  # correctly treats the output cells as numeric.
+
+  # Extracts all rows (from the catalog) containing catch values and converts the columns into numeric values to
+  # avoid Excel considering
   filtered_catalogue_data_rev_num = filtered_catalogue_data_rev[seq(1, nrow(filtered_catalogue_data_rev), 2)]
   to_numeric = colnames(filtered_catalogue_data_rev_num[, 7:(ncol(filtered_catalogue_data_rev_num) - 4)])
   filtered_catalogue_data_rev_num = filtered_catalogue_data_rev_num[, (to_numeric) := lapply(.SD, as.numeric), .SDcols = to_numeric]
 
   filtered_catalogue_data_rev_txt = filtered_catalogue_data_rev[seq(2, nrow(filtered_catalogue_data_rev), 2)]
 
-  # Writes the table header...
-  workbook$add_data(x = colnames(filtered_catalogue_data_rev_num), start_col = 1, start_row = 4)
+  # Writes the table header.(it is necessary to convert the column names into a list to ensure these are written as a row)
+  workbook$add_data(x = as.list(colnames(filtered_catalogue_data_rev_num)), start_col = 1, start_row = 4)
 
   # Writes all numeric values
   for(num_row in 1:nrow(filtered_catalogue_data_rev_num))
