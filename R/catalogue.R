@@ -228,7 +228,11 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   if(max_percentage < cutoff_percentage) stop(paste0("The maximum percentage (", max_percentage, "%) should be higher than the cutoff percentage (", cutoff_percentage, "%)"))
 
-  workbook$add_worksheet(stock)
+  workbook$set_base_font(font_name = "Calibri", font_size = 9)
+
+  workbook$add_worksheet(stock, tab_color = wb_color("#F79646"),
+                         zoom = 90, orientation = "landscape")
+
   workbook$set_active_sheet(stock)
 
   actual_max_percentage = min(filtered_catalogue_data[PercCum >= max_percentage]$PercCum)
@@ -255,17 +259,18 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_dxfs_style(name = "yellow",    bg_fill = wb_color("#FFFF00"))
   workbook$add_dxfs_style(name = "green",     bg_fill = wb_color("#92D050"))
   workbook$add_dxfs_style(name = "darkgreen", bg_fill = wb_color("#00B050"))
+  workbook$add_dxfs_style(name = "noT1",      bg_fill = wb_color("#00B0F0"))
 
   workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color("#FF0000"))
 
   # Fills some of the expected metadata (table reference, overall score, and total catch value)
   workbook$merge_cells(dims = "A1:D1")
   workbook$add_data(dims = "A1", x = paste0("Table ", table_number, ". ", stock, " stock"))
-  workbook$add_font(dims = "A1", bold = "single")
+  workbook$add_font(dims = "A1", name = "Calibri", bold = "single")
 
   workbook$add_data(dims = "A3", x = "Score")
   workbook$add_data(dims = "B3", x = score)
-  workbook$add_font(dims = "A3:B3", bold = "single")
+  workbook$add_font(dims = "A3:B3", name = "Calibri", bold = "single")
   workbook$add_fill(dims = "A3:B3", color = wb_color("#FDE9D9"))
 
   workbook$add_numfmt(dims = "B3", numfmt = "#0.00") # Two decimal digits for the score
@@ -294,7 +299,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_border(dims = wb_dims(rows = 2, cols = 5:(ncol(filtered_catalogue_data_rev) - 4)),
                       top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
 
-  workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), bold = "single")
+  workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), name = "Calibri", bold = "single")
   workbook$add_border(dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)),
                 top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
 
@@ -303,9 +308,10 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   workbook$add_cell_style(dims = wb_dims(rows = 4, cols = 7:ncol(filtered_catalogue_data_rev)), horizontal = "center")
 
-  data_dims = wb_dims(rows = 5:( 5 + nrow(filtered_catalogue_data_rev) ), cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
+  data_dims     = wb_dims(rows = 5:( 5 + nrow(filtered_catalogue_data_rev) ), cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
 
   workbook$add_cell_style(dims = data_dims, horizontal = "right")
+
   # Styles the workbook content - END
 
   # Adds conditional formatting to the workbook - BEGIN
@@ -319,6 +325,19 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ab\"",  style = "green")
   workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ac\"",  style = "green")
   workbook$add_conditional_formatting(dims = data_dims, rule = "=\"abc\"", style = "darkgreen")
+
+  for(rownum in seq(5, 5 + nrow(filtered_catalogue_data_rev), 2)) {
+    t1_dims = wb_dims(rows = rownum, cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
+
+    first_t1_dims = wb_dims(rows = rownum,     cols = 7)
+    first_t2_dims = wb_dims(rows = rownum + 1, cols = 7)
+
+    workbook$add_conditional_formatting(dims = t1_dims,
+                                        rule = paste0("AND(", "$E", rownum, "<>\"UN\", ", # Checks that the gear group code is not UN...
+                                                              first_t1_dims, "=\"\", ",
+                                                              first_t2_dims, "<>\"\", ",
+                                                              first_t2_dims, "<>\"-1\")"), style = "noT1")
+  }
 
   perc_col     = ncol(filtered_catalogue_data_rev) - 2
   perc_cum_col = ncol(filtered_catalogue_data_rev) - 1
