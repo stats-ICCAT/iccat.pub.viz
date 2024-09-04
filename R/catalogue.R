@@ -220,17 +220,19 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 #' @param max_percentage TBD
 #' @param score TBD
 #' @param table_number TBD
+#' @param table_label TBD
 #' @param stock TBD
+#' @param sheet TBD
 #' @return TBD
 #' @export
-catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, max_percentage = 100, score, table_number, stock) {
+catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA) {
   DEBUG("Appending catalog data...")
 
   if(max_percentage < cutoff_percentage) stop(paste0("The maximum percentage (", max_percentage, "%) should be higher than the cutoff percentage (", cutoff_percentage, "%)"))
 
   workbook$set_base_font(font_name = "Calibri", font_size = 9)
 
-  workbook$add_worksheet(stock, tab_color = wb_color("#F79646"),
+  workbook$add_worksheet(ifelse(is.na(sheet), stock, sheet), tab_color = wb_color("#F79646"),
                          zoom = 90, orientation = "landscape")
 
   workbook$set_active_sheet(stock)
@@ -240,7 +242,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   filtered_catalogue_data = copy(filtered_catalogue_data[PercCum <= actual_max_percentage])
 
   # Identifies the row of the first record exceeding the provided cutoff percentage (95% by default)
-  row_cutoff = min(which(filtered_catalogue_data$PercCum >= cutoff_percentage))
+  row_cutoff = min(which(filtered_catalogue_data$PercCum >= cutoff_percentage)) + 2 # To move to the next strata
 
   # Calculates the quantiles for the percentage and cumulative percentage values
   perc_quantiles     = quantile(filtered_catalogue_data$Perc)
@@ -264,8 +266,11 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color("#FF0000"))
 
   # Fills some of the expected metadata (table reference, overall score, and total catch value)
-  workbook$merge_cells(dims = "A1:D1")
-  workbook$add_data(dims = "A1", x = paste0("Table ", table_number, ". ", stock, " stock"))
+
+  table_description = paste0("Table ", table_number, ". ", table_label)
+
+  workbook$merge_cells(dims = "A1:G1")
+  workbook$add_data(dims = "A1", x = table_description)
   workbook$add_font(dims = "A1", name = "Calibri", bold = "single")
 
   workbook$add_data(dims = "A3", x = "Score")

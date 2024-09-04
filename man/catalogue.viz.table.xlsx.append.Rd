@@ -12,7 +12,9 @@ catalogue.viz.table.xlsx.append(
   max_percentage = 100,
   score,
   table_number,
-  stock
+  table_label,
+  stock,
+  sheet = NA
 )
 }
 \arguments{
@@ -30,7 +32,11 @@ catalogue.viz.table.xlsx.append(
 
 \item{table_number}{TBD}
 
+\item{table_label}{TBD}
+
 \item{stock}{TBD}
+
+\item{sheet}{TBD}
 }
 \value{
 TBD
