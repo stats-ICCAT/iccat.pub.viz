@@ -198,6 +198,8 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
       flextable::bg   (part = "body", j = "PercCum", bg = bg_matrix_catch$PercCum)
   }
 
+  FT = FT %>% flextable::colformat_num(j = c("Perc", "PercCum"), digits = 2)
+
   FT = FT %>%
 
     flextable::color(part = "body", j = first_year_column:ncol(catalogue_data), color = fg_matrix) %>%
@@ -216,6 +218,8 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 #' @param filtered_catalogue_data TBD
 #' @param workbook TBD
 #' @param pretty_print_catches TBD
+#' @param catch_round_digits TBD
+#' @param perc_round_digits TBD
 #' @param cutoff_percentage TBD
 #' @param max_percentage TBD
 #' @param score TBD
@@ -225,7 +229,7 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 #' @param sheet TBD
 #' @return TBD
 #' @export
-catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA) {
+catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, catch_round_digits = 0, perc_round_digits = 2, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA) {
   DEBUG("Appending catalog data...")
 
   if(max_percentage < cutoff_percentage) stop(paste0("The maximum percentage (", max_percentage, "%) should be higher than the cutoff percentage (", cutoff_percentage, "%)"))
@@ -247,6 +251,18 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   # Calculates the quantiles for the percentage and cumulative percentage values
   perc_quantiles     = quantile(filtered_catalogue_data$Perc)
   perc_cum_quantiles = quantile(filtered_catalogue_data$PercCum)
+
+  # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  rounded_perc_format  = paste0("#0")
+
+  if(perc_round_digits > 0)
+    rounded_perc_format = paste0(rounded_perc_format, ".", rep("0", perc_round_digits))
+
+  # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  rounded_catch_format = ifelse(pretty_print_catches, "#,##0", "0")
+
+  if(catch_round_digits > 0)
+    rounded_catch_format = paste0(rounded_catch_format, ".", rep("0", catch_round_digits))
 
   # Sets to blank the percentage cumulative percentage, and total catch values every other row
   filtered_catalogue_data = filtered_catalogue_data[seq(2, nrow(filtered_catalogue_data), 2), `:=`(Perc = NA, PercCum = NA, TotCatches = NA)]
@@ -298,7 +314,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_data(x = catches, start_col = 7, start_row = 2, na.strings = "", col_names = FALSE)
 
   # Formats annual catch value for each row with (or without) a thousands separator
-  workbook$add_numfmt(dims = wb_dims(rows = 2, cols = 7:(ncol(filtered_catalogue_data_rev) - 4)), numfmt = ifelse(pretty_print_catches, "#,##0", "0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  workbook$add_numfmt(dims = wb_dims(rows = 2, cols = 7:(ncol(filtered_catalogue_data_rev) - 4)), numfmt = rounded_catch_format) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
 
   # Styles the workbook content - BEGIN
   workbook$add_border(dims = wb_dims(rows = 2, cols = 5:(ncol(filtered_catalogue_data_rev) - 4)),
@@ -386,13 +402,13 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
     workbook$add_data(x = filtered_catalogue_data_rev_txt[num_row], start_col = 1, start_row = 6 + ( num_row - 1 ) * 2, na.strings = "", col_names = FALSE)
 
   # Formats percentages (and cumulative percentages) with two trailing digits
-  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_col:perc_cum_col), numfmt = "#0.00")  # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_col:perc_cum_col), numfmt = rounded_perc_format)
 
   # Formats total catch value for each row with a thousands separator
-  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = ncol(filtered_catalogue_data_rev)), numfmt = ifelse(pretty_print_catches, "#,##0", "###0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  workbook$add_numfmt(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = ncol(filtered_catalogue_data_rev)), numfmt = rounded_catch_format)
 
   # Formats all catch value with a thousands separator
-  workbook$add_numfmt(dims = data_dims, numfmt = ifelse(pretty_print_catches, "#,##0", "0")) # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
+  workbook$add_numfmt(dims = data_dims, numfmt = rounded_catch_format)
 
   workbook$set_col_widths(cols = 4, widths = 26.64)
 

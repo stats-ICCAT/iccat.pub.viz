@@ -8,6 +8,8 @@ catalogue.viz.table.xlsx.append(
   filtered_catalogue_data,
   workbook,
   pretty_print_catches = FALSE,
+  catch_round_digits = 0,
+  perc_round_digits = 2,
   cutoff_percentage = 95,
   max_percentage = 100,
   score,
@@ -23,6 +25,10 @@ catalogue.viz.table.xlsx.append(
 \item{workbook}{TBD}
 
 \item{pretty_print_catches}{TBD}
+
+\item{catch_round_digits}{TBD}
+
+\item{perc_round_digits}{TBD}
 
 \item{cutoff_percentage}{TBD}
 
