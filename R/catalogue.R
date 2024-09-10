@@ -256,13 +256,13 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   rounded_perc_format  = paste0("#0")
 
   if(perc_round_digits > 0)
-    rounded_perc_format = paste0(rounded_perc_format, ".", rep("0", perc_round_digits))
+    rounded_perc_format = paste0(rounded_perc_format, ".", paste0(rep("0", perc_round_digits), collapse = ""))
 
   # See also https://cran.r-project.org/web/packages/openxlsx2/openxlsx2.pdf
   rounded_catch_format = ifelse(pretty_print_catches, "#,##0", "0")
 
   if(catch_round_digits > 0)
-    rounded_catch_format = paste0(rounded_catch_format, ".", rep("0", catch_round_digits))
+    rounded_catch_format = paste0(rounded_catch_format, ".", paste0(rep("0", catch_round_digits), collapse = ""))
 
   # Sets to blank the percentage cumulative percentage, and total catch values every other row
   filtered_catalogue_data = filtered_catalogue_data[seq(2, nrow(filtered_catalogue_data), 2), `:=`(Perc = NA, PercCum = NA, TotCatches = NA)]
