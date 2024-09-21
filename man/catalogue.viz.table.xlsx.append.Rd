@@ -16,7 +16,8 @@ catalogue.viz.table.xlsx.append(
   table_number,
   table_label,
   stock,
-  sheet = NA
+  sheet = NA,
+  show_grids = FALSE
 )
 }
 \arguments{
@@ -43,6 +44,8 @@ catalogue.viz.table.xlsx.append(
 \item{stock}{TBD}
 
 \item{sheet}{TBD}
+
+\item{show_grids}{TBD}
 }
 \value{
 TBD

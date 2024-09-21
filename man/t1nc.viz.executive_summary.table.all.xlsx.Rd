@@ -9,7 +9,8 @@ t1nc.viz.executive_summary.table.all.xlsx(
   output_file,
   version = 0,
   fill = NA,
-  legacy_style = FALSE
+  legacy_style = FALSE,
+  show_grids = FALSE
 )
 }
 \arguments{
@@ -22,6 +23,8 @@ t1nc.viz.executive_summary.table.all.xlsx(
 \item{fill}{TBD}
 
 \item{legacy_style}{TBD}
+
+\item{show_grids}{TBD}
 }
 \value{
 TBD

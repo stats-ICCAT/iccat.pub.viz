@@ -735,9 +735,10 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
 #' @param version TBD
 #' @param fill TBD
 #' @param legacy_style TBD
+#' @param show_grids TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA, legacy_style = FALSE) {
+t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA, legacy_style = FALSE, show_grids = FALSE) {
   if(legacy_style)
     log_warn("Applying legacy style to output table...")
 
@@ -776,7 +777,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
 
     ws_name = species
 
-    wb$add_worksheet(sheet = ws_name, grid_lines = FALSE)
+    wb$add_worksheet(sheet = ws_name, grid_lines = show_grids)
     wb$set_active_sheet(ws_name)
 
     description_en =
@@ -887,9 +888,10 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
 #' @param version TBD
 #' @param fill TBD
 #' @param legacy_style TBD
+#' @param show_grids TBD
 #' @return TBD
 #' @export
-t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA, legacy_style = FALSE) {
+t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA, legacy_style = FALSE, show_grids = FALSE) {
   if(legacy_style)
     log_warn("Applying legacy style to output table...")
 
@@ -960,7 +962,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
 
   ws_name = species_group_code
 
-  wb$add_worksheet(sheet = species_group_code, grid_lines = FALSE)
+  wb$add_worksheet(sheet = species_group_code, grid_lines = show_grids)
 
   wb$set_active_sheet(species_group_code)
 

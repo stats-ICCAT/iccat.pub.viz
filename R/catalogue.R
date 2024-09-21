@@ -227,9 +227,10 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
 #' @param table_label TBD
 #' @param stock TBD
 #' @param sheet TBD
+#' @param show_grids TBD
 #' @return TBD
 #' @export
-catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, catch_round_digits = 0, perc_round_digits = 2, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA) {
+catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, catch_round_digits = 0, perc_round_digits = 2, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA, show_grids = FALSE) {
   DEBUG("Appending catalog data...")
 
   if(max_percentage < cutoff_percentage) stop(paste0("The maximum percentage (", max_percentage, "%) should be higher than the cutoff percentage (", cutoff_percentage, "%)"))
@@ -237,7 +238,8 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$set_base_font(font_name = "Calibri", font_size = 9)
 
   workbook$add_worksheet(ifelse(is.na(sheet), stock, sheet), tab_color = wb_color("#F79646"),
-                         zoom = 90, orientation = "landscape")
+                         zoom = 90, orientation = "landscape",
+                         grid_lines = show_grids)
 
   workbook$set_active_sheet(stock)
 

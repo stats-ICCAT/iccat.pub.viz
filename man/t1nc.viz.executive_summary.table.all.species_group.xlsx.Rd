@@ -11,7 +11,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
   output_file,
   version = 0,
   fill = NA,
-  legacy_style = FALSE
+  legacy_style = FALSE,
+  show_grids = FALSE
 )
 }
 \arguments{
@@ -26,6 +27,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
 \item{fill}{TBD}
 
 \item{legacy_style}{TBD}
+
+\item{show_grids}{TBD}
 
 \item{t1nc_data}{TBD}
 }
