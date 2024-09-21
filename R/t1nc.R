@@ -748,7 +748,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
   wb$add_dxfs_style(name = "zeroValued", text_bold = TRUE)
 
   for(species in species_codes) {
-    species_data = copy(REF_SPECIES[CODE == species])
+    species_data = copy(iccat.pub.data::REF_SPECIES[CODE == species])
 
     t1nc_table = prepare_t1nc_executive_summary_table_all(t1nc_data[Species == species], fill = ifelse(legacy_style, NA, fill))
 
@@ -776,7 +776,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
 
     ws_name = species
 
-    wb$add_worksheet(sheet = ws_name)
+    wb$add_worksheet(sheet = ws_name, grid_lines = FALSE)
     wb$set_active_sheet(ws_name)
 
     description_en =
@@ -786,7 +786,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_EN,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") by area, gear, and flag (v", version, " ",
+        ") by area, gear, and flag (v", version, ", ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -798,7 +798,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_ES,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") por area, arte y bandera (v", version, " ",
+        ") por area, arte y bandera (v", version, ", ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -810,7 +810,7 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
         species_data$NAME_FR,
         " (",
         species_data$SCIENTIFIC_NAME,
-        ") par zone, engin et pavillon (v", version, " ",
+        ") par zone, engin et pavillon (v", version, ", ",
         format(Sys.Date(), "%Y-%m-%d"),
         ")"
       )
@@ -864,7 +864,9 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
 
     wb$add_numfmt(dims = value_dims, numfmt = "0")
 
-    if(legacy_style) {
+    if(legacy_style) { # Applies the "zeroValued" conditional formatting to the last column and CPC rows only
+      FIRST_ROW = FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears)
+
       value_dims = paste0(LAST_COL, FIRST_ROW, ":", LAST_COL, FIRST_ROW + nrow(t1nc_table_global) + nrow(t1nc_table_gears) + nrow(t1nc_table_CPCs) - 1)
     }
 
@@ -958,7 +960,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
 
   ws_name = species_group_code
 
-  wb$add_worksheet(sheet = species_group_code)
+  wb$add_worksheet(sheet = species_group_code, grid_lines = FALSE)
+
   wb$set_active_sheet(species_group_code)
 
   description_en =
