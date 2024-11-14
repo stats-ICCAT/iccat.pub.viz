@@ -19,7 +19,7 @@ This library is meant for public usage, and for this reason it does not have dep
 + Combined
 + Single-species Excel table
 + Species group Excel table
-4) [SCRS catalogues](#scrs-catalogues 
+4) [SCRS catalogues](#scrs-catalogues)
 + Catalogue text and color legends
 + Catalogue table
 + Catalogue Excel outputs
