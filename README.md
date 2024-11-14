@@ -9,17 +9,17 @@ This library is meant for public usage, and for this reason it does not have dep
 1) [Stocks](#stocks-metadata)
 + Summary table by species / stock
 + Available sampling areas by stock
-2) [T1 nominal catch trends](#)
+2) [T1 nominal catch trends](#t1-nominal-catch-trends)
 + Legend
 + Catch trend table
-3) [T1 nominal catch tables](#)
+3) [T1 nominal catch tables](#t1-nominal-catch-tables)
 + Global
 + By gear
 + By CPC
 + Combined
 + Single-species Excel table
 + Species group Excel table
-4) [SCRS catalogues](#) 
+4) [SCRS catalogues](#scrs-catalogues 
 + Catalogue text and color legends
 + Catalogue table
 + Catalogue Excel outputs
@@ -92,6 +92,13 @@ stock.viz.data(species_codes = c("ALB", "BFT"))
 ####
 ####
 
+### T1 nominal catch tables
+
+####
+####
+####
+
+### SCRS catalogues
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualizations
 + [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue) 
