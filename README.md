@@ -150,7 +150,7 @@ t1nc.viz.executive_summary.table.full(T1[Species == "ALB" & YearC %in% 1994:2023
 ```
 t1nc.viz.executive_summary.table.all.xlsx(T1[Species == "ALB" & YearC %in% 1994:2023], output_file = "./ALB_1994_2023.xlsx")
 ```
-> Executing the statement above will result in creating the `ALB_1994_2023.xlsx` file in the currently working directory for the session
+> Executing the statement above will result in creating the `ALB_1994_2023.xlsx` file in the current working directory for the session
 
 ![image](https://github.com/user-attachments/assets/d6c40a63-6aaa-46f5-9179-73d018873eba)
 
@@ -165,5 +165,6 @@ t1nc.viz.executive_summary.table.all.xlsx(T1[Species %in% c("ALB", "BFT") & Year
 
 ### SCRS catalogues
 ## Future extensions
-+ [ ] standardize functions' signatures for all different types of visualizations
++ [ ] standardize functions' signatures for all different types of visualization
++ [ ] update the function producing the T1 nominal catch [static table legend](#static-table-legend) to also consider changes in sensitivity 
 + [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue) 
