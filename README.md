@@ -61,12 +61,13 @@ or by executing the following statement:
 For the examples to work, the following statement should be executed once per session:
 
 ```
-library(iccat.pub.plots)
+library(iccat.pub.viz)
 ```
 
 > To run these examples we assume that the `T1NC` object contains all T1 nominal catch data as retrieved using the `iccat.dev.data::t1nc` function (i.e., `T1 = t1nc()`).
  
 ### Stocks metadata
+> All necessary information to visualize stocks' metadata is included in the `iccat.pub.data` library, which is one of the direct dependency of this project.
 
 #### Stock summary table (all species)
 ```
@@ -88,8 +89,18 @@ stock.viz.data(species_codes = c("ALB", "BFT"))
 
 ### T1 nominal catch trends
 
-####
-####
+#### Static table legend
+```
+t1nc.viz.trends.legend()
+```
+![image](https://github.com/user-attachments/assets/bfe7a222-2fa8-4587-a793-2d919d182199)
+
+#### Nominal catch trends of Albacore tuna for the years 1994-2023
+```
+t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023)
+```
+![image](https://github.com/user-attachments/assets/ba2dfbf0-d7bf-4b65-af01-db4aaa73ba24)
+
 ####
 
 ### T1 nominal catch tables
