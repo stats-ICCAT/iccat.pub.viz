@@ -146,8 +146,22 @@ t1nc.viz.executive_summary.table.full(T1[Species == "ALB" & YearC %in% 1994:2023
 ![image](https://github.com/user-attachments/assets/08a0aaba-cbb8-4718-8cf4-cc21152d4e81)
 ![image](https://github.com/user-attachments/assets/c76cf81c-8b1e-43cd-8b3a-b9c1c593a98c)
 
+#### Nominal catch SCRS Excel output for Albacore tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.all.xlsx(T1[Species == "ALB" & YearC %in% 1994:2023], output_file = "./ALB_1994_2023.xlsx")
+```
+> Executing the statement above will result in creating the `ALB_1994_2023.xlsx` file in the currently working directory for the session
 
-####
+![image](https://github.com/user-attachments/assets/d6c40a63-6aaa-46f5-9179-73d018873eba)
+
+#### Nominal catch SCRS Excel output for Albacore and Bluefin tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.all.xlsx(T1[Species %in% c("ALB", "BFT") & YearC %in% 1994:2023], output_file = "./ALB_BFT_1994_2023.xlsx")
+```
+> Executing the statement above will result in creating the `ALB_BFT_1994_2023.xlsx` file in the current working directory for the session
+
+![image](https://github.com/user-attachments/assets/976d140d-2337-4205-b103-63f66ba91a0b)
+![image](https://github.com/user-attachments/assets/f4877b2b-d73b-4848-8b5c-47ad8b5d0420)
 
 ### SCRS catalogues
 ## Future extensions
