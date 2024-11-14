@@ -95,13 +95,23 @@ t1nc.viz.trends.legend()
 ```
 ![image](https://github.com/user-attachments/assets/bfe7a222-2fa8-4587-a793-2d919d182199)
 
-#### Nominal catch trends of Albacore tuna for the years 1994-2023
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, species, gear group, stock and catch type
 ```
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023)
 ```
-![image](https://github.com/user-attachments/assets/ba2dfbf0-d7bf-4b65-af01-db4aaa73ba24)
+![image](https://github.com/user-attachments/assets/68802982-44ef-4a9f-b95c-e4261d9d8d2b)
 
-####
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, and stock 
+```
+t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE)
+```
+![image](https://github.com/user-attachments/assets/ff63fc57-96b6-4287-bc74-373ddf4bccc5)
+
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, and with catch gradients turned on
+```
+t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE, max_cumulative_percentage = .95, rank = TRUE, show_catches_gradient = TRUE)
+```
+![image](https://github.com/user-attachments/assets/8cfeba26-d8f6-4f5b-8859-bc52a3a4a3dc)
 
 ### T1 nominal catch tables
 
