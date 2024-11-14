@@ -101,22 +101,52 @@ t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023)
 ```
 ![image](https://github.com/user-attachments/assets/68802982-44ef-4a9f-b95c-e4261d9d8d2b)
 
-#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, and stock 
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock 
 ```
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE)
 ```
 ![image](https://github.com/user-attachments/assets/ff63fc57-96b6-4287-bc74-373ddf4bccc5)
 
-#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, and with catch gradients turned on
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, and with catch gradients turned on
 ```
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE, max_cumulative_percentage = .95, rank = TRUE, show_catches_gradient = TRUE)
 ```
 ![image](https://github.com/user-attachments/assets/8cfeba26-d8f6-4f5b-8859-bc52a3a4a3dc)
 
+#### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, with catch gradients turned on and with sensitivity increased to 50%
+```
+t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE, rank = TRUE, show_catches_gradient = TRUE, max_cumulative_percentage = .95, sensitivity = .5)
+```
+![image](https://github.com/user-attachments/assets/c21a79fe-2543-488a-b5b2-95dcb05bcd73)
+
 ### T1 nominal catch tables
 
-####
-####
+#### Nominal catch SCRS global table for Albacore tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:2023])
+```
+![image](https://github.com/user-attachments/assets/38f3bc83-1c83-4aac-b7bc-28757fd078cc)
+
+#### Nominal catch SCRS gears table for Albacore tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:2023])
+```
+![image](https://github.com/user-attachments/assets/5dc02ca5-ac68-4fb3-81d7-4835573f37fd)
+
+#### Nominal catch SCRS CPC table for Albacore tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.CPCs(T1[Species == "ALB" & YearC %in% 1994:2023])
+```
+![image](https://github.com/user-attachments/assets/552b6798-5e7a-42bd-8bea-d757e793413e)
+
+#### Nominal catch SCRS full table for Albacore tuna (1994-2023)
+```
+t1nc.viz.executive_summary.table.full(T1[Species == "ALB" & YearC %in% 1994:2023])
+```
+![image](https://github.com/user-attachments/assets/08a0aaba-cbb8-4718-8cf4-cc21152d4e81)
+![image](https://github.com/user-attachments/assets/c76cf81c-8b1e-43cd-8b3a-b9c1c593a98c)
+
+
 ####
 
 ### SCRS catalogues
