@@ -6,20 +6,20 @@ This library is meant for public usage, and for this reason it does not have dep
 
 ## Artifacts that can be produced using the functions provided by the library
 
-1) Stocks
+1) [Stocks](#stocks-metadata)
 + Summary table by species / stock
 + Available sampling areas by stock
-2) T1 nominal catch trends
+2) [T1 nominal catch trends](#)
 + Legend
 + Catch trend table
-3) T1 nominal catch tables
+3) [T1 nominal catch tables](#)
 + Global
 + By gear
 + By CPC
 + Combined
 + Single-species Excel table
 + Species group Excel table
-4) SCRS catalogues 
+4) [SCRS catalogues](#) 
 + Catalogue text and color legends
 + Catalogue table
 + Catalogue Excel outputs
@@ -86,7 +86,11 @@ stock.viz.data(species_codes = c("ALB", "BFT"))
 ```
 ![image](https://github.com/user-attachments/assets/2a1667cd-6c61-4787-942b-cb873f10339b)
 
-### 
+### T1 nominal catch trends
+
+####
+####
+####
 
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualizations
