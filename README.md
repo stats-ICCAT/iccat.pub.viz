@@ -180,9 +180,21 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(T1[Species %in% c("ALB",
 ![image](https://github.com/user-attachments/assets/cebfb1fb-0486-40d8-936d-14232949b0bd)
 ![image](https://github.com/user-attachments/assets/3c4ff06e-61ed-498c-a899-8846a70aa0b8)
 
-
-
 ### SCRS catalogues
+
+#### Table legend (textual)
+```
+catalogue.viz.table.legend()
+```
+![image](https://github.com/user-attachments/assets/97083a2a-fe5b-4dc8-ab0e-71c14c0b7e64)
+
+#### Table legend (colors)
+```
+catalogue.viz.table.legend.colours()
+```
+![image](https://github.com/user-attachments/assets/b5318398-c7f5-41dc-ba47-61050cea6da6)
+
+
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
 + [ ] update the function producing the T1 nominal catch [static table legend](#static-table-legend) to also consider changes in sensitivity 
