@@ -2,7 +2,7 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table.xlsx.append}
 \alias{catalogue.viz.table.xlsx.append}
-\title{TBD}
+\title{Appends an Excel version of the SCRS catalogue to an existing Excel workbook}
 \usage{
 catalogue.viz.table.xlsx.append(
   filtered_catalogue_data,
@@ -21,35 +21,35 @@ catalogue.viz.table.xlsx.append(
 )
 }
 \arguments{
-\item{filtered_catalogue_data}{TBD}
+\item{filtered_catalogue_data}{filtered SCRS catalogue data (for a single species) as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**}
 
-\item{workbook}{TBD}
+\item{workbook}{an Excel workbook reference (see \code{\link{}}) as the container for one or more SCRS catalogue worksheets added through this function}
 
-\item{pretty_print_catches}{TBD}
+\item{pretty_print_catches}{to _prettily_ print catch values}
 
-\item{catch_round_digits}{TBD}
+\item{catch_round_digits}{the number of digits catch values should be rounded to}
 
-\item{perc_round_digits}{TBD}
+\item{perc_round_digits}{the number of digits percentage values should be rounded to}
 
-\item{cutoff_percentage}{TBD}
+\item{cutoff_percentage}{the maximum value of the cumulative catch percentage used to highlight the most relevant strata}
 
-\item{max_percentage}{TBD}
+\item{max_percentage}{to indicate the maximum cumulative catch percentage for strata to be included in the output}
 
-\item{score}{TBD}
+\item{score}{the data score for the information presented in the catalogue (calculated externally)}
 
-\item{table_number}{TBD}
+\item{table_number}{the table number, in accordance with the SCRS catalogue template structure}
 
-\item{table_label}{TBD}
+\item{table_label}{the table label, in accordance with the SCRS catalogue template structure}
 
-\item{stock}{TBD}
+\item{stock}{the stock code for the provided catalogue data}
 
-\item{sheet}{TBD}
+\item{sheet}{the name of the worksheet where the catalogue data will be written}
 
-\item{show_grids}{TBD}
+\item{show_grids}{whether or not showing cell grids in the Excel spreadsheet}
 }
 \value{
-TBD
+nothing, as the update will happen directly in the provided Excel workbook
 }
 \description{
-TBD
+Appends an Excel version of the SCRS catalogue to an existing Excel workbook
 }

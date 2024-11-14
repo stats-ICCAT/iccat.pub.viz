@@ -2,7 +2,7 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table}
 \alias{catalogue.viz.table}
-\title{TBD}
+\title{Produces a _flextable_ containing a formatted SCRS catalogue}
 \usage{
 catalogue.viz.table(
   catalogue_data,
@@ -18,29 +18,29 @@ catalogue.viz.table(
 )
 }
 \arguments{
-\item{catalogue_data}{TBD}
+\item{catalogue_data}{the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**}
 
-\item{show_catches_gradient}{TBD}
+\item{show_catches_gradient}{to enable / disable a color gradients on the cumulative catch column}
 
-\item{remove_species}{TBD}
+\item{remove_species}{if the species shall not be included in the stratification}
 
-\item{remove_stock}{TBD}
+\item{remove_stock}{if the stock shall not be included in the stratification}
 
-\item{truncate_years}{TBD}
+\item{truncate_years}{if year values in the table headers should be truncated to the last two digits}
 
 \item{flag_separator_width}{TBD}
 
-\item{default_font_size}{TBD}
+\item{default_font_size}{the font size applied by default}
 
-\item{values_font_size}{TBD}
+\item{values_font_size}{the font size used for value cells only}
 
-\item{default_h_padding}{TBD}
+\item{default_h_padding}{the horizontal padding applied to all cells by default}
 
-\item{values_h_padding}{TBD}
+\item{values_h_padding}{the horizontal padding appliet to value cells only}
 }
 \value{
-TBD
+a _flextable_ containing a SCRS catalogue formatted according to the provided criteria
 }
 \description{
-TBD
+Produces a _flextable_ containing a formatted SCRS catalogue
 }

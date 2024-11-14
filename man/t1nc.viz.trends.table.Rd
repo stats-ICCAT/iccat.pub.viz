@@ -2,7 +2,8 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.trends.table}
 \alias{t1nc.viz.trends.table}
-\title{TBD}
+\title{Produces a T1NC trends table analyzing the relative changes in catch magnitudes across a given time frame and with respect to several different levels
+of stratification.}
 \usage{
 t1nc.viz.trends.table(
   t1nc_data,
@@ -21,31 +22,32 @@ t1nc.viz.trends.table(
 )
 }
 \arguments{
-\item{t1nc_data}{TBD}
+\item{t1nc_data}{T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function}
 
-\item{by_species}{TBD}
+\item{by_species}{if the stratification shall include species}
 
-\item{by_stock}{TBD}
+\item{by_stock}{if the stratification shall include stocks}
 
-\item{by_gear}{TBD}
+\item{by_gear}{if the stratification shall include gears}
 
-\item{by_catch_type}{TBD}
+\item{by_catch_type}{if the stratification shall include catch types}
 
-\item{rank}{TBD}
+\item{rank}{to show / hide the catch ranks of each strata}
 
-\item{max_cumulative_percentage}{TBD}
+\item{max_cumulative_percentage}{the upper limit of the cumulative catch percentage of the strata included in the final table}
 
-\item{rel_diff_limits}{TBD}
+\item{rel_diff_limits}{the table modeling the default T1NC trends classification limits}
 
-\item{sensitivity}{TBD}
+\item{sensitivity}{a multiplicative factor (between 0 and 1) applied to the trends classification limits}
 
-\item{show_catches_gradient}{TBD}
+\item{show_catches_gradient}{to show / hide gradients for the cumulative catch limits}
 
-\item{colorize_gears}{TBD}
+\item{colorize_gears}{whether to colorize or not the cells showing the current gear code for the strata}
 }
 \value{
-TBD
+the T1NC trends table (in _flextable_ format) produced for the provided T1 nominal catch data and in accordance with the chosen criteria
 }
 \description{
-TBD
+Produces a T1NC trends table analyzing the relative changes in catch magnitudes across a given time frame and with respect to several different levels
+of stratification.
 }

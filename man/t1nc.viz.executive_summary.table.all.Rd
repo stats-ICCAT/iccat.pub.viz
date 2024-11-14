@@ -2,18 +2,18 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.executive_summary.table.all}
 \alias{t1nc.viz.executive_summary.table.all}
-\title{TBD}
+\title{Produces the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables}
 \usage{
 t1nc.viz.executive_summary.table.all(t1nc_data, fill = NA)
 }
 \arguments{
-\item{t1nc_data}{TBD}
+\item{t1nc_data}{T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function}
 
-\item{fill}{TBD}
+\item{fill}{the value to use to fill cells with no catch data}
 }
 \value{
-TBD
+a _flextable_ containing the information to be included in the SCRS executive summaries
 }
 \description{
-TBD
+Produces the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables
 }

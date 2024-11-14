@@ -3,7 +3,8 @@
 \docType{data}
 \name{DEFAULT_TRENDS_REL_DIFF_LIMITS}
 \alias{DEFAULT_TRENDS_REL_DIFF_LIMITS}
-\title{TBD}
+\title{The table modeling the default T1NC trends classification limits with respect to the
+relative magnitude of catch differences.}
 \format{
 An object of class \code{list} of length 4.
 }
@@ -11,6 +12,7 @@ An object of class \code{list} of length 4.
 DEFAULT_TRENDS_REL_DIFF_LIMITS
 }
 \description{
-TBD
+The table modeling the default T1NC trends classification limits with respect to the
+relative magnitude of catch differences.
 }
 \keyword{datasets}

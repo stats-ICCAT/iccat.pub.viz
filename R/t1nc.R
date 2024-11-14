@@ -1,4 +1,5 @@
-#' TBD
+#' The table modeling the default T1NC trends classification limits with respect to the
+#' relative magnitude of catch differences.
 #'
 #' @export
 DEFAULT_TRENDS_REL_DIFF_LIMITS =
@@ -35,9 +36,9 @@ t1nc.viz.trends.table.fg_matrix = function(data_matrix) {
   )
 }
 
-#' TBD
+#' A printable version of the T1NC trends legend.
 #'
-#' @return TBD
+#' @return a _flextable_ formatted according to the agreed style guides
 #' @export
 t1nc.viz.trends.legend = function() {
   legend = data.table(
@@ -87,20 +88,21 @@ t1nc.viz.trends.legend = function() {
   )
 }
 
-#' TBD
+#' Produces a T1NC trends table analyzing the relative changes in catch magnitudes across a given time frame and with respect to several different levels
+#' of stratification.
 #'
-#' @param t1nc_data TBD
-#' @param by_species TBD
-#' @param by_stock TBD
-#' @param by_gear TBD
-#' @param by_catch_type TBD
-#' @param rank TBD
-#' @param max_cumulative_percentage TBD
-#' @param rel_diff_limits TBD
-#' @param sensitivity TBD
-#' @param show_catches_gradient TBD
-#' @param colorize_gears TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param by_species if the stratification shall include species
+#' @param by_stock if the stratification shall include stocks
+#' @param by_gear if the stratification shall include gears
+#' @param by_catch_type if the stratification shall include catch types
+#' @param rank to show / hide the catch ranks of each strata
+#' @param max_cumulative_percentage the upper limit of the cumulative catch percentage of the strata included in the final table
+#' @param rel_diff_limits the table modeling the default T1NC trends classification limits
+#' @param sensitivity a multiplicative factor (between 0 and 1) applied to the trends classification limits
+#' @param show_catches_gradient to show / hide gradients for the cumulative catch limits
+#' @param colorize_gears whether to colorize or not the cells showing the current gear code for the strata
+#' @return the T1NC trends table (in _flextable_ format) produced for the provided T1 nominal catch data and in accordance with the chosen criteria
 #' @export
 t1nc.viz.trends.table = function(t1nc_data, year_min = NA, year_max = NA,
                                  by_species = TRUE, by_stock = TRUE, by_gear = TRUE, by_catch_type = TRUE,
@@ -514,11 +516,11 @@ prepare_t1nc_executive_summary_table_all = function(t1nc_data, fill = NA) {
   return(summary)
 }
 
-#' TBD
+#' Produces a table of T1 nominal catch data summary **for a single species** as expected in the _global_ section of the SCRS executive summary tables
 #'
-#' @param t1nc_data TBD
-#' @param fill TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data **for a single species** as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param fill the value to use to fill cells with no catch data
+#' @return a _flextable_ containing the information to be included in the _global_ section of the SCRS executive summaries
 #' @export
 t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
   summary = prepare_t1nc_executive_summary_table_global(t1nc_data, fill)
@@ -544,11 +546,11 @@ t1nc.viz.executive_summary.table.global = function(t1nc_data, fill = NA) {
   )
 }
 
-#' TBD
+#' Produces a table of T1 nominal catch data summary as expected in the _gear_ section of the SCRS executive summary tables
 #'
-#' @param t1nc_data TBD
-#' @param fill TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param fill the value to use to fill cells with no catch data
+#' @return a _flextable_ containing the information to be included in the _gear_ section of the SCRS executive summaries
 #' @export
 t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
   summary = prepare_t1nc_executive_summary_table_gears(t1nc_data, fill)
@@ -576,11 +578,11 @@ t1nc.viz.executive_summary.table.gears = function(t1nc_data, fill = NA) {
   )
 }
 
-#' TBD
+#' Produces a table of T1 nominal catch data summary as expected in the _CPC_ section of the SCRS executive summary tables
 #'
-#' @param t1nc_data TBD
-#' @param fill TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param fill the value to use to fill cells with no catch data
+#' @return a _flextable_ containing the information to be included in the _CPC_ section of the SCRS executive summaries
 #' @export
 t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
   summary = prepare_t1nc_executive_summary_table_CPCs(t1nc_data, fill)
@@ -612,11 +614,11 @@ t1nc.viz.executive_summary.table.CPCs = function(t1nc_data, fill = NA) {
   )
 }
 
-#' TBD
+#' Produces the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables
 #'
-#' @param t1nc_data TBD
-#' @param fill TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param fill the value to use to fill cells with no catch data
+#' @return a _flextable_ containing the information to be included in the SCRS executive summaries
 #' @export
 t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
   species_codes = sort(unique(t1nc_data$Species))
@@ -728,15 +730,15 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
   )
 }
 
-#' TBD
+#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables
 #'
-#' @param t1nc_data TBD
-#' @param output_file TBD
-#' @param version TBD
-#' @param fill TBD
-#' @param legacy_style TBD
-#' @param show_grids TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param output_file the output Excel file name
+#' @param version to specify the table version in accordance with the SCRS executive summary tables template
+#' @param fill the value to use to fill cells with no catch data
+#' @param legacy_style whether or not applying the 'legacy' table output style
+#' @param show_grids whether or not showing cell grids in the Excel spreadsheet
+#' @return nothing, as the Excel file is simply stored at the provided path
 #' @export
 t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, version = 0, fill = NA, legacy_style = FALSE, show_grids = FALSE) {
   if(legacy_style)
@@ -879,17 +881,18 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
   wb$save(output_file)
 }
 
-#' TBD
+#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
+#' This version
 #'
-#' @param t1nc_data TBD
-#' @param species_group_code TBD
-#' @param species_group_descriptions TBD
-#' @param output_file TBD
-#' @param version TBD
-#' @param fill TBD
-#' @param legacy_style TBD
-#' @param show_grids TBD
-#' @return TBD
+#' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
+#' @param species_group_code a species group code
+#' @param species_group_descriptions a list containing the species group scientific name as well as its name in the three official ICCAT languages
+#' @param output_file the output Excel file name
+#' @param version to specify the table version in accordance with the SCRS executive summary tables template
+#' @param fill the value to use to fill cells with no catch data
+#' @param legacy_style whether or not applying the 'legacy' table output style
+#' @param show_grids whether or not showing cell grids in the Excel spreadsheet
+#' @return nothing, as the Excel file is simply stored at the provided path
 #' @export
 t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc_data, species_group_code, species_group_descriptions, output_file, version = 0, fill = NA, legacy_style = FALSE, show_grids = FALSE) {
   if(legacy_style)

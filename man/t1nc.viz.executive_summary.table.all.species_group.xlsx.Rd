@@ -2,7 +2,8 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.executive_summary.table.all.species_group.xlsx}
 \alias{t1nc.viz.executive_summary.table.all.species_group.xlsx}
-\title{TBD}
+\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
+This version}
 \usage{
 t1nc.viz.executive_summary.table.all.species_group.xlsx(
   filtered_t1nc_data,
@@ -16,25 +17,26 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
 )
 }
 \arguments{
-\item{species_group_code}{TBD}
+\item{species_group_code}{a species group code}
 
-\item{species_group_descriptions}{TBD}
+\item{species_group_descriptions}{a list containing the species group scientific name as well as its name in the three official ICCAT languages}
 
-\item{output_file}{TBD}
+\item{output_file}{the output Excel file name}
 
-\item{version}{TBD}
+\item{version}{to specify the table version in accordance with the SCRS executive summary tables template}
 
-\item{fill}{TBD}
+\item{fill}{the value to use to fill cells with no catch data}
 
-\item{legacy_style}{TBD}
+\item{legacy_style}{whether or not applying the 'legacy' table output style}
 
-\item{show_grids}{TBD}
+\item{show_grids}{whether or not showing cell grids in the Excel spreadsheet}
 
-\item{t1nc_data}{TBD}
+\item{t1nc_data}{T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function}
 }
 \value{
-TBD
+nothing, as the Excel file is simply stored at the provided path
 }
 \description{
-TBD
+Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
+This version
 }

@@ -2,7 +2,7 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.executive_summary.table.all.xlsx}
 \alias{t1nc.viz.executive_summary.table.all.xlsx}
-\title{TBD}
+\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables}
 \usage{
 t1nc.viz.executive_summary.table.all.xlsx(
   t1nc_data,
@@ -14,21 +14,21 @@ t1nc.viz.executive_summary.table.all.xlsx(
 )
 }
 \arguments{
-\item{t1nc_data}{TBD}
+\item{t1nc_data}{T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function}
 
-\item{output_file}{TBD}
+\item{output_file}{the output Excel file name}
 
-\item{version}{TBD}
+\item{version}{to specify the table version in accordance with the SCRS executive summary tables template}
 
-\item{fill}{TBD}
+\item{fill}{the value to use to fill cells with no catch data}
 
-\item{legacy_style}{TBD}
+\item{legacy_style}{whether or not applying the 'legacy' table output style}
 
-\item{show_grids}{TBD}
+\item{show_grids}{whether or not showing cell grids in the Excel spreadsheet}
 }
 \value{
-TBD
+nothing, as the Excel file is simply stored at the provided path
 }
 \description{
-TBD
+Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables
 }

@@ -2,16 +2,16 @@
 % Please edit documentation in R/stocks.R
 \name{stock.viz.data}
 \alias{stock.viz.data}
-\title{TBD}
+\title{Produces a summary table of the stocks / ssampling areas for one or more species}
 \usage{
 stock.viz.data(species_codes = NULL)
 }
 \arguments{
-\item{species_codes}{TBD}
+\item{species_codes}{a vector of species codes that have a stock / sampling area assigned}
 }
 \value{
-TBD
+a _flextable_ table summarizing the information by stock
 }
 \description{
-TBD
+Produces a summary table of the stocks / ssampling areas for one or more species
 }

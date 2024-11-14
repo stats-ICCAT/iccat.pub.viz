@@ -2,13 +2,13 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table.legend.colours}
 \alias{catalogue.viz.table.legend.colours}
-\title{TBD}
+\title{Produces a _flextable_ corresponding to the color legend used for the catalogue cell content}
 \usage{
 catalogue.viz.table.legend.colours()
 }
 \value{
-TBD
+a _flextable_ corresponding to the lcolor legend used for the catalogue cell content
 }
 \description{
-TBD
+Produces a _flextable_ corresponding to the color legend used for the catalogue cell content
 }

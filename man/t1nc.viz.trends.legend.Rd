@@ -2,13 +2,13 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.trends.legend}
 \alias{t1nc.viz.trends.legend}
-\title{TBD}
+\title{A printable version of the T1NC trends legend.}
 \usage{
 t1nc.viz.trends.legend()
 }
 \value{
-TBD
+a _flextable_ formatted according to the agreed style guides
 }
 \description{
-TBD
+A printable version of the T1NC trends legend.
 }

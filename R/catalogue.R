@@ -1,15 +1,32 @@
-#' TBD
+COLOR_TAB        = "#F79646"
+
+COLOR_NO_T2      = "#FF0000"
+COLOR_LIMITED_T2 = "#FFFF00"
+COLOR_PARTIAL_T2 = "#92D050"
+COLOR_ALL_T2     = "#00B050"
+COLOR_NO_T1      = "#00B0F0"
+COLOR_NO_DATA    = "#CCCCCC"
+COLOR_DEFAULT    = "#FFFFFF"
+
+COLOR_UNCL_GEAR  = "#FF0000"
+
+COLOR_SCORE      = "#FDE9D9"
+
+GRADIENT_CATCH            = c("#F8696B", "#FFEB84", "#63BE7B")
+GRADIENT_CATCH_CUMULATIVE = c("#63BE7B", "#FFFFFF", "#F8696B")
+
+#' Internal function computing the background color matrix for the catalogue
 #'
-#' @param data_matrix TBD
-#' @return TBD
+#' @param data_matrix the catalogue data matrix
+#' @return a table with the specifications of the background color of each data cell in the catalogue
 catalogue.viz.table.bg_matrix = function(data_matrix) {
   bg_matrix =
-    ifelse(is.na(data_matrix) | data_matrix == "-", "lightgray",
-           ifelse(data_matrix == "-1", "red",
-                  ifelse(data_matrix == "a" | data_matrix == "b" | data_matrix == "c" | data_matrix == "bc", "yellow",
-                         ifelse(data_matrix == "ab" | data_matrix == "ac", "green",
-                                ifelse(data_matrix == "abc", darken("green", amount = .3),
-                                       "white"
+    ifelse(is.na(data_matrix) | data_matrix == "-", COLOR_NO_DATA,
+           ifelse(data_matrix == "-1", COLOR_NO_T2,
+                  ifelse(data_matrix == "a" | data_matrix == "b" | data_matrix == "c" | data_matrix == "bc", COLOR_LIMITED_T2,
+                         ifelse(data_matrix == "ab" | data_matrix == "ac", COLOR_PARTIAL_T2,
+                                ifelse(data_matrix == "abc", COLOR_ALL_T2,
+                                       COLOR_DEFAULT
                                 )
                          )
                   )
@@ -21,10 +38,10 @@ catalogue.viz.table.bg_matrix = function(data_matrix) {
   )
 }
 
-#' TBD
+#' Internal function computing the foreground color matrix for the catalogue
 #'
-#' @param data_matrix TBD
-#' @return TBD
+#' @param data_matrix the catalogue data matrix
+#' @return a table with the specifications of the foreground color of each data cell in the catalogue
 catalogue.viz.table.fg_matrix = function(data_matrix) {
   fg_matrix =
     ifelse(is.na(data_matrix) | data_matrix == "abc", "black", "black") # Originally "white", "black", when the darkest green was "darkgreen"
@@ -32,9 +49,9 @@ catalogue.viz.table.fg_matrix = function(data_matrix) {
   return(fg_matrix)
 }
 
-#' TBD
+#' Produces a _flextable_ corresponding to the legend of the catalogue cell content
 #'
-#' @return TBD
+#' @return a _flextable_ corresponding to the legend of the catalogue cell content
 #' @export
 catalogue.viz.table.legend = function() {
   legend = data.table(
@@ -58,9 +75,9 @@ catalogue.viz.table.legend = function() {
   )
 }
 
-#' TBD
+#' Produces a _flextable_ corresponding to the color legend used for the catalogue cell content
 #'
-#' @return TBD
+#' @return a _flextable_ corresponding to the lcolor legend used for the catalogue cell content
 #' @export
 catalogue.viz.table.legend.colours = function() {
   colour_scheme = data.table(
@@ -97,19 +114,19 @@ catalogue.viz.table.legend.colours = function() {
   )
 }
 
-#' TBD
+#' Produces a _flextable_ containing a formatted SCRS catalogue
 #'
-#' @param catalogue_data TBD
-#' @param show_catches_gradient TBD
-#' @param remove_species TBD
-#' @param remove_stock TBD
-#' @param truncate_years TBD
+#' @param catalogue_data the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**
+#' @param show_catches_gradient to enable / disable a color gradients on the cumulative catch column
+#' @param remove_species if the species shall not be included in the stratification
+#' @param remove_stock if the stock shall not be included in the stratification
+#' @param truncate_years if year values in the table headers should be truncated to the last two digits
 #' @param flag_separator_width TBD
-#' @param default_font_size TBD
-#' @param values_font_size TBD
-#' @param default_h_padding TBD
-#' @param values_h_padding TBD
-#' @return TBD
+#' @param default_font_size the font size applied by default
+#' @param values_font_size the font size used for value cells only
+#' @param default_h_padding the horizontal padding applied to all cells by default
+#' @param values_h_padding the horizontal padding appliet to value cells only
+#' @return a _flextable_ containing a SCRS catalogue formatted according to the provided criteria
 #' @export
 catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, remove_species = FALSE, remove_stock = FALSE, truncate_years = TRUE,
                                flag_separator_width = 1, default_font_size = 7, values_font_size = 7, default_h_padding = 5, values_h_padding = 2) {
@@ -213,22 +230,22 @@ catalogue.viz.table = function(catalogue_data, show_catches_gradient = TRUE, rem
   return(FT)
 }
 
-#' TBD
+#' Appends an Excel version of the SCRS catalogue to an existing Excel workbook
 #'
-#' @param filtered_catalogue_data TBD
-#' @param workbook TBD
-#' @param pretty_print_catches TBD
-#' @param catch_round_digits TBD
-#' @param perc_round_digits TBD
-#' @param cutoff_percentage TBD
-#' @param max_percentage TBD
-#' @param score TBD
-#' @param table_number TBD
-#' @param table_label TBD
-#' @param stock TBD
-#' @param sheet TBD
-#' @param show_grids TBD
-#' @return TBD
+#' @param filtered_catalogue_data filtered SCRS catalogue data (for a single species) as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**
+#' @param workbook an Excel workbook reference (see \code{\link{}}) as the container for one or more SCRS catalogue worksheets added through this function
+#' @param pretty_print_catches to _prettily_ print catch values
+#' @param catch_round_digits the number of digits catch values should be rounded to
+#' @param perc_round_digits the number of digits percentage values should be rounded to
+#' @param cutoff_percentage the maximum value of the cumulative catch percentage used to highlight the most relevant strata
+#' @param max_percentage to indicate the maximum cumulative catch percentage for strata to be included in the output
+#' @param score the data score for the information presented in the catalogue (calculated externally)
+#' @param table_number the table number, in accordance with the SCRS catalogue template structure
+#' @param table_label the table label, in accordance with the SCRS catalogue template structure
+#' @param stock the stock code for the provided catalogue data
+#' @param sheet the name of the worksheet where the catalogue data will be written
+#' @param show_grids whether or not showing cell grids in the Excel spreadsheet
+#' @return nothing, as the update will happen directly in the provided Excel workbook
 #' @export
 catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pretty_print_catches = FALSE, catch_round_digits = 0, perc_round_digits = 2, cutoff_percentage = 95, max_percentage = 100, score, table_number, table_label, stock, sheet = NA, show_grids = FALSE) {
   DEBUG("Appending catalog data...")
@@ -237,7 +254,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   workbook$set_base_font(font_name = "Calibri", font_size = 9)
 
-  workbook$add_worksheet(ifelse(is.na(sheet), stock, sheet), tab_color = wb_color("#F79646"),
+  workbook$add_worksheet(ifelse(is.na(sheet), stock, sheet), tab_color = wb_color(COLOR_TAB),
                          zoom = 90, orientation = "landscape",
                          grid_lines = show_grids)
 
@@ -275,13 +292,13 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   filtered_catalogue_data_rev = cbind(filtered_catalogue_data_rev, filtered_catalogue_data[, .(Rank = FisheryRank, `%` = Perc, `%cum` = PercCum, `Σ`= TotCatches)])
 
   # Creates some custom cell styles
-  workbook$add_dxfs_style(name = "red",       bg_fill = wb_color("#FF0000"))
-  workbook$add_dxfs_style(name = "yellow",    bg_fill = wb_color("#FFFF00"))
-  workbook$add_dxfs_style(name = "green",     bg_fill = wb_color("#92D050"))
-  workbook$add_dxfs_style(name = "darkgreen", bg_fill = wb_color("#00B050"))
-  workbook$add_dxfs_style(name = "noT1",      bg_fill = wb_color("#00B0F0"))
+  workbook$add_dxfs_style(name = "no_t2",      bg_fill = wb_color(COLOR_NO_T2))
+  workbook$add_dxfs_style(name = "limited_t2", bg_fill = wb_color(COLOR_LIMITED_T2))
+  workbook$add_dxfs_style(name = "partial_t2", bg_fill = wb_color(COLOR_PARTIAL_T2))
+  workbook$add_dxfs_style(name = "all_t2",     bg_fill = wb_color(COLOR_ALL_T2))
+  workbook$add_dxfs_style(name = "no_t1",      bg_fill = wb_color(COLOR_NO_T1))
 
-  workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color("#FF0000"))
+  workbook$add_dxfs_style(name = "UNCL_gear", font_color = wb_color(COLOR_UNCL_GEAR))
 
   # Fills some of the expected metadata (table reference, overall score, and total catch value)
 
@@ -294,7 +311,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_data(dims = "A3", x = "Score")
   workbook$add_data(dims = "B3", x = score)
   workbook$add_font(dims = "A3:B3", name = "Calibri", bold = "single")
-  workbook$add_fill(dims = "A3:B3", color = wb_color("#FDE9D9"))
+  workbook$add_fill(dims = "A3:B3", color = wb_color(COLOR_SCORE))
 
   workbook$add_numfmt(dims = "B3", numfmt = "#0.00") # Two decimal digits for the score
 
@@ -340,14 +357,14 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   # Adds conditional formatting to the workbook - BEGIN
   workbook$add_conditional_formatting(dims = paste0("E5:E", 5 + nrow(filtered_catalogue_data_rev)), rule = "=\"UN\"",  style = "UNCL_gear")
 
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"-1\"",  style = "red")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"a\"",   style = "yellow")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"b\"",   style = "yellow")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"c\"",   style = "yellow")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"bc\"",  style = "yellow")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ab\"",  style = "green")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ac\"",  style = "green")
-  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"abc\"", style = "darkgreen")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"-1\"",  style = "no_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"a\"",   style = "limited_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"b\"",   style = "limited_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"c\"",   style = "limited_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"bc\"",  style = "limited_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ab\"",  style = "partial_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"ac\"",  style = "partial_t2")
+  workbook$add_conditional_formatting(dims = data_dims, rule = "=\"abc\"", style = "all_t2")
 
   for(rownum in seq(5, 5 + nrow(filtered_catalogue_data_rev), 2)) {
     t1_dims = wb_dims(rows = rownum, cols = 7:( ncol(filtered_catalogue_data_rev) - 4 ))
@@ -359,19 +376,19 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
                                         rule = paste0("AND(", "$E", rownum, "<>\"UN\", ", # Checks that the gear group code is not UN...
                                                               first_t1_dims, "=\"\", ",
                                                               first_t2_dims, "<>\"\", ",
-                                                              first_t2_dims, "<>\"-1\")"), style = "noT1")
+                                                              first_t2_dims, "<>\"-1\")"), style = "no_t1")
   }
 
   perc_col     = ncol(filtered_catalogue_data_rev) - 2
   perc_cum_col = ncol(filtered_catalogue_data_rev) - 1
 
   workbook$add_conditional_formatting(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_col),
-                                      style = c("#F8696B", "#FFEB84", "#63BE7B"),
+                                      style = GRADIENT_CATCH,
                                       rule = c(perc_quantiles["0%"][[1]], perc_quantiles["75%"][[1]], perc_quantiles["100%"][[1]]),
                                       type = "colorScale")
 
   workbook$add_conditional_formatting(dims = wb_dims(rows = 4:(4 + nrow(filtered_catalogue_data_rev)), cols = perc_cum_col),
-                                      style = c("#63BE7B", "#FFFFFF", "#F8696B"),
+                                      style = GRADIENT_CATCH_CUMULATIVE,
                                       rule = c(perc_cum_quantiles["0%"][[1]], perc_cum_quantiles["50%"][[1]], perc_cum_quantiles["100%"][[1]]),
                                       type = "colorScale")
 

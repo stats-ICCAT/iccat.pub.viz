@@ -1,6 +1,7 @@
-#' TBD
+#' Produces a summary table of the stocks / statistical areas / sampling areas for one or more species
 #'
-#' @return TBD
+#' @param species_codes a vector of species codes that have a stock / sampling area assigned
+#' @return a _flextable_ table summarizing the information by species
 #' @export
 stock.viz.summary = function(species_codes = NULL) {
   stock_summary = stock.summary(species_codes)
@@ -37,10 +38,10 @@ stock.viz.summary = function(species_codes = NULL) {
   )
 }
 
-#' TBD
+#' Produces a summary table of the stocks / ssampling areas for one or more species
 #'
-#' @param species_codes TBD
-#' @return TBD
+#' @param species_codes a vector of species codes that have a stock / sampling area assigned
+#' @return a _flextable_ table summarizing the information by stock
 #' @export
 stock.viz.data = function(species_codes = NULL) {
   stock_data = iccat.pub.data::REF_STOCKS

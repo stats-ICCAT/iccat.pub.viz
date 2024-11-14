@@ -2,16 +2,16 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table.bg_matrix}
 \alias{catalogue.viz.table.bg_matrix}
-\title{TBD}
+\title{Internal function computing the background color matrix for the catalogue}
 \usage{
 catalogue.viz.table.bg_matrix(data_matrix)
 }
 \arguments{
-\item{data_matrix}{TBD}
+\item{data_matrix}{the catalogue data matrix}
 }
 \value{
-TBD
+a table with the specifications of the background color of each data cell in the catalogue
 }
 \description{
-TBD
+Internal function computing the background color matrix for the catalogue
 }

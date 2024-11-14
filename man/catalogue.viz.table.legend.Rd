@@ -2,13 +2,13 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table.legend}
 \alias{catalogue.viz.table.legend}
-\title{TBD}
+\title{Produces a _flextable_ corresponding to the legend of the catalogue cell content}
 \usage{
 catalogue.viz.table.legend()
 }
 \value{
-TBD
+a _flextable_ corresponding to the legend of the catalogue cell content
 }
 \description{
-TBD
+Produces a _flextable_ corresponding to the legend of the catalogue cell content
 }

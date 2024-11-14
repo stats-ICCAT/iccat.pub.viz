@@ -2,16 +2,16 @@
 % Please edit documentation in R/catalogue.R
 \name{catalogue.viz.table.fg_matrix}
 \alias{catalogue.viz.table.fg_matrix}
-\title{TBD}
+\title{Internal function computing the foreground color matrix for the catalogue}
 \usage{
 catalogue.viz.table.fg_matrix(data_matrix)
 }
 \arguments{
-\item{data_matrix}{TBD}
+\item{data_matrix}{the catalogue data matrix}
 }
 \value{
-TBD
+a table with the specifications of the foreground color of each data cell in the catalogue
 }
 \description{
-TBD
+Internal function computing the foreground color matrix for the catalogue
 }
