@@ -249,7 +249,7 @@ catalogue.viz.table.xlsx.append(
   stock = "ALB-ALL",
   table_number = 1,
   score = NA, 
-  table_label = "Mediterranean albacore tuna catalogue"
+  table_label = "Albacore tuna catalogue"
 )
 
 # Appends the bluefin tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 60% of total catches
@@ -262,14 +262,14 @@ catalogue.viz.table.xlsx.append(
   stock = "BFT-ALL",
   table_number = 2,
   score = NA, 
-  table_label = "Western Atlantic bluefin tuna catalogue"
+  table_label = "Bluefin tuna catalogue"
 )
 
 # Saves the workbook to an XLSX file
 output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ```
-![image](https://github.com/user-attachments/assets/18bc914d-7796-4ed4-bb8e-28c90c8aa460)
-![image](https://github.com/user-attachments/assets/c4405f44-1784-4281-b385-ea2562da0931)
+![image](https://github.com/user-attachments/assets/876461cf-bd37-469e-a3d6-816f78ef2137)
+![image](https://github.com/user-attachments/assets/f2f9e446-7b6b-41bb-9c10-d3d1154fde0a)
 
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
