@@ -302,8 +302,11 @@ calculate_score = function(stock) {
   return(results$Score)
 }
 
+# Creates an empty Excel workbook
 output_workbook = openxlsx2::wb_workbook()
 
+# Appends the Mediterranean albacore tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 95% of total catches
+# and putting the cutoff line at the end of the first stratum accounting for 90% of total catches 
 catalogue.viz.table.xlsx.append(
   workbook = output_workbook,
   filtered_catalogue_data = ALB_MED_CAT,
@@ -315,6 +318,8 @@ catalogue.viz.table.xlsx.append(
   table_label = "Mediterranean albacore tuna catalogue"
 )
 
+# Appends the north Atlantic albacore tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 95% of total catches
+# and putting the cutoff line at the end of the first stratum accounting for 90% of total catches 
 catalogue.viz.table.xlsx.append(
   workbook = output_workbook,
   filtered_catalogue_data = ALB_ATN_CAT,
@@ -326,6 +331,7 @@ catalogue.viz.table.xlsx.append(
   table_label = "Northern Atlantic albacore tuna catalogue"
 )
 
+# Saves the workbook to an XLSX file
 output_workbook$save(file = "./ALB_MED_ATN_Catalogue.xlsx")
 ```
 ![image](https://github.com/user-attachments/assets/76051046-e959-400b-a85d-77a560c100ec)
