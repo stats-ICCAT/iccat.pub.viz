@@ -216,20 +216,20 @@ catalogue.viz.table(ALB_BFT_CAT, remove_species = TRUE, remove_stock = TRUE)
 ```
 ![image](https://github.com/user-attachments/assets/5c74bb2d-3cff-462e-80d8-cab50a40f9aa)
 
-#### SCRS catalogue for albacore and  bluefin tuna, for the years 1994-2023, as an Excel file
+#### SCRS catalogue for albacore and  bluefin tuna, for the years 2004-2023, as an Excel file
 ```
-# ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
-# ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 
 ALB_CAT = catalogue.compile(fishery_ranks_data = ALB_FR,
-                            catalogue_data     = ALB_CA, year_from = 1994,
+                            catalogue_data     = ALB_CA, year_from = 2004,
                             pretty_print_catches = FALSE)
 
-BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "BFT", year_from = 1994)
-BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "BFT", year_from = 1994)
+BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "BFT", year_from = 2004)
+BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "BFT", year_from = 2004)
 
 BFT_CAT = catalogue.compile(fishery_ranks_data = BFT_FR,
-                           catalogue_data     = BFT_CA, year_from = 1994,
+                           catalogue_data     = BFT_CA, year_from = 2004,
                            pretty_print_catches = FALSE)
 
 # Creater an empty Excel workbook
@@ -242,7 +242,7 @@ catalogue.viz.table.xlsx.append(
   filtered_catalogue_data = ALB_CAT,
   cutoff_percentage = 50,
   max_percentage = 60,
-  stock = "ATN",
+  stock = "ALB-ALL",
   table_number = 1,
   score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
   table_label = "Mediterranean albacore tuna catalogue"
@@ -255,7 +255,7 @@ catalogue.viz.table.xlsx.append(
   filtered_catalogue_data = BFT_CAT,
   cutoff_percentage = 60,
   max_percentage = 70,
-  stock = "ATW",
+  stock = "BFT-ALL",
   table_number = 2,
   score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
   table_label = "Western Atlantic bluefin tuna catalogue"
@@ -264,8 +264,12 @@ catalogue.viz.table.xlsx.append(
 # Saves the workbook to an XLSX file
 output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ```
+![image](https://github.com/user-attachments/assets/18bc914d-7796-4ed4-bb8e-28c90c8aa460)
+![image](https://github.com/user-attachments/assets/c4405f44-1784-4281-b385-ea2562da0931)
+
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
 + [ ] update the function producing the T1 nominal catch [static table legend](#static-table-legend) to also consider changes in sensitivity 
 + [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue)
 + [ ] add options to remove flag and gear from the SCRS catalogue stratification
++ [ ] update the `dbSTAT.dbo.sp_obtainMultipleScores` function to calculate scores for *all* stocks of a given species, as this feature would be of interest when producing the catalogue for a given species regardless of its stock areas
