@@ -271,9 +271,69 @@ output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ![image](https://github.com/user-attachments/assets/876461cf-bd37-469e-a3d6-816f78ef2137)
 ![image](https://github.com/user-attachments/assets/5f215ac5-5318-4471-8b8f-b77f28137d94)
 
+####
+```
+# ALB_MED_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "MED", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_MED_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "MED", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+
+ALB_MED_CAT = catalogue.compile(fishery_ranks_data = ALB_MED_FR,
+                                catalogue_data     = ALB_MED_CA, year_from = 2004,
+                                pretty_print_catches = FALSE)
+
+# ALB_ATN_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "ATN", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_ATN_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "ATN", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+
+ALB_ATN_CAT = catalogue.compile(fishery_ranks_data = ALB_ATN_FR,
+                                catalogue_data     = ALB_ATN_CA, year_from = 2004,
+                                pretty_print_catches = FALSE)
+
+calculate_score = function(stock) { 
+  SQL = paste0("
+     SELECT *
+     FROM dbo.sp_obtainMultipleScores('ALB', '", stock, "', 20, 2023)
+     WHERE YrTo = 2023
+  ")
+  
+  results = tabular_query(
+    connection = DB_STAT(),
+    statement = SQL
+  ) 
+  
+  return(results$Score)
+}
+
+output_workbook = openxlsx2::wb_workbook()
+
+catalogue.viz.table.xlsx.append(
+  workbook = output_workbook,
+  filtered_catalogue_data = ALB_MED_CAT,
+  cutoff_percentage = 90,
+  max_percentage = 95,
+  stock = "ALB-MED",
+  table_number = 1,
+  score = calculate_score("MED"), # Requires access to the ICCAT dbSTAT database 
+  table_label = "Mediterranean albacore tuna catalogue"
+)
+
+catalogue.viz.table.xlsx.append(
+  workbook = output_workbook,
+  filtered_catalogue_data = ALB_ATN_CAT,
+  cutoff_percentage = 90,
+  max_percentage = 95,
+  stock = "ALB-ATN",
+  table_number = 2,
+  score = calculate_score("ATN"), # Requires access to the ICCAT dbSTAT database
+  table_label = "Northern Atlantic albacore tuna catalogue"
+)
+
+output_workbook$save(file = "./ALB_MED_ATN_Catalogue.xlsx")
+```
+![image](https://github.com/user-attachments/assets/76051046-e959-400b-a85d-77a560c100ec)
+![image](https://github.com/user-attachments/assets/3216b4db-00a8-4ac5-a0c4-98c42161a51b)
+
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
 + [ ] update the function producing the T1 nominal catch [static table legend](#static-table-legend) to also consider changes in sensitivity 
 + [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue)
 + [ ] add options to remove flag and gear from the SCRS catalogue stratification
-+ [ ] update the `dbSTAT.dbo.sp_obtainMultipleScores` function to calculate scores for *all* stocks of a given species, as this feature would be of interest when producing the catalogue for a given species regardless of its stock areas
++ [ ] update the `dbSTAT.dbo.sp_obtainMultipleScores` function to calculate scores for *all* stocks of a given species, as this feature would be of interest when producing the catalogue for a species regardless of its stock areas
