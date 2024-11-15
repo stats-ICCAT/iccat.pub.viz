@@ -269,7 +269,7 @@ catalogue.viz.table.xlsx.append(
 output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ```
 ![image](https://github.com/user-attachments/assets/876461cf-bd37-469e-a3d6-816f78ef2137)
-![image](https://github.com/user-attachments/assets/f2f9e446-7b6b-41bb-9c10-d3d1154fde0a)
+![image](https://github.com/user-attachments/assets/5f215ac5-5318-4471-8b8f-b77f28137d94)
 
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
