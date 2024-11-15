@@ -232,8 +232,12 @@ BFT_CAT = catalogue.compile(fishery_ranks_data = BFT_FR,
                            catalogue_data     = BFT_CA, year_from = 2004,
                            pretty_print_catches = FALSE)
 
-# Creater an empty Excel workbook
+# Creates an empty Excel workbook
 output_workbook = openxlsx2::wb_workbook()
+
+# Currently, catalogue scores can only be calculated for a given species and stock
+# (using the dbSTAT.dbo.sp_obtainMultipleScores function) and not for a species as a whole.
+# For this reason, the score parameter in the below function calls is set to NA
 
 # Appends the albacore tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 60% of total catches
 # and putting the cutoff line at the end of the first stratum accounting for 50% of total catches 
@@ -244,7 +248,7 @@ catalogue.viz.table.xlsx.append(
   max_percentage = 60,
   stock = "ALB-ALL",
   table_number = 1,
-  score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
+  score = NA, 
   table_label = "Mediterranean albacore tuna catalogue"
 )
 
@@ -257,7 +261,7 @@ catalogue.viz.table.xlsx.append(
   max_percentage = 70,
   stock = "BFT-ALL",
   table_number = 2,
-  score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
+  score = NA, 
   table_label = "Western Atlantic bluefin tuna catalogue"
 )
 
