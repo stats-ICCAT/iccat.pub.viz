@@ -271,7 +271,7 @@ output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ![image](https://github.com/user-attachments/assets/876461cf-bd37-469e-a3d6-816f78ef2137)
 ![image](https://github.com/user-attachments/assets/5f215ac5-5318-4471-8b8f-b77f28137d94)
 
-####
+#### SCRS catalogue for north Atlantic and mediterranean albacore tuna, for the years 2004-2023, as an Excel file
 ```
 # ALB_MED_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "MED", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_MED_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "MED", year_from = 2004) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
