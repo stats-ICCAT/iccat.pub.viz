@@ -194,8 +194,78 @@ catalogue.viz.table.legend.colours()
 ```
 ![image](https://github.com/user-attachments/assets/b5318398-c7f5-41dc-ba47-61050cea6da6)
 
+#### SCRS catalogue table for Albacore and Bluefin tuna, for the years 1994-2023, stratified by species, stock, flag, and gear.
+```
+# ALB_BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 
+# ALB_BFT_CAT = catalogue.compile(fishery_ranks_data = ALB_BFT_FR, catalogue_data = ALB_BFT_CA) # The catalogue.compile function is part of the iccat.pub.data library
+
+catalogue.viz.table(ALB_BFT_CAT)
+```
+![image](https://github.com/user-attachments/assets/71e4e3b6-c5cd-44d2-9dc2-0117467201a5)
+
+#### SCRS catalogue table for temperate tunas, for the years 1994-2023, stratified by flag and gear.
+```
+# TEMP_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
+# TEMP_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
+
+# TEMP_CAT = catalogue.compile(fishery_ranks_data = TEMP_FR, catalogue_data = TEMP_CA, remove_species = TRUE, remove_stock = TRUE) # The **catalogue.compile** function is part of the **iccat.pub.data** library
+
+catalogue.viz.table(ALB_BFT_CAT, remove_species = TRUE, remove_stock = TRUE)
+```
+![image](https://github.com/user-attachments/assets/5c74bb2d-3cff-462e-80d8-cab50a40f9aa)
+
+#### SCRS catalogue for albacore and  bluefin tuna, for the years 1994-2023, as an Excel file
+```
+# ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+# ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
+
+ALB_CAT = catalogue.compile(fishery_ranks_data = ALB_FR,
+                            catalogue_data     = ALB_CA, year_from = 1994,
+                            pretty_print_catches = FALSE)
+
+BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "BFT", year_from = 1994)
+BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "BFT", year_from = 1994)
+
+BFT_CAT = catalogue.compile(fishery_ranks_data = BFT_FR,
+                           catalogue_data     = BFT_CA, year_from = 1994,
+                           pretty_print_catches = FALSE)
+
+# Creater an empty Excel workbook
+output_workbook = openxlsx2::wb_workbook()
+
+# Appends the albacore tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 60% of total catches
+# and putting the cutoff line at the end of the first stratum accounting for 50% of total catches 
+catalogue.viz.table.xlsx.append(
+  workbook = output_workbook,
+  filtered_catalogue_data = ALB_CAT,
+  cutoff_percentage = 50,
+  max_percentage = 60,
+  stock = "ATN",
+  table_number = 1,
+  score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
+  table_label = "Mediterranean albacore tuna catalogue"
+)
+
+# Appends the bluefin tuna catalogue to the Excel workbook, limiting the outputs to all strata accounting for up to 60% of total catches
+# and putting the cutoff line at the end of the first stratum accounting for 50% of total catches 
+catalogue.viz.table.xlsx.append(
+  workbook = output_workbook,
+  filtered_catalogue_data = BFT_CAT,
+  cutoff_percentage = 60,
+  max_percentage = 70,
+  stock = "ATW",
+  table_number = 2,
+  score = NA, # To be calculated beforehand, using the dbo.sp_obtainMultipleScores function in dbSTAT
+  table_label = "Western Atlantic bluefin tuna catalogue"
+)
+
+# Saves the workbook to an XLSX file
+output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
+```
 ## Future extensions
 + [ ] standardize functions' signatures for all different types of visualization
 + [ ] update the function producing the T1 nominal catch [static table legend](#static-table-legend) to also consider changes in sensitivity 
-+ [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue) 
++ [ ] extend the function producing the tabular version of the SCRS catalogue to also show (in light blue) cells for which there is T2 data but not T1 data (this is already available in the Excel version of the catalogue)
++ [ ] add options to remove flag and gear from the SCRS catalogue stratification
