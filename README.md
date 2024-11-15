@@ -219,19 +219,20 @@ catalogue.viz.table(ALB_BFT_CAT, remove_species = TRUE, remove_stock = TRUE)
 #### SCRS catalogue for albacore and  bluefin tuna, for the years 2004-2023, as an Excel file
 ```
 # Require access to the iccat.dev.data library (and to the ICCAT databases)
-# ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", year_from = 2004)
-# ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", year_from = 2004)
+# ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB")
+# ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB")
 
 ALB_CAT = catalogue.compile(fishery_ranks_data   = ALB_FR,
                             catalogue_data       = ALB_CA,
-                            pretty_print_catches = FALSE)
+                            pretty_print_catches = FALSE, year_from = 2004)
 
-BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "BFT", year_from = 2004)
-BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "BFT", year_from = 2004)
+# Require access to the iccat.dev.data library (and to the ICCAT databases)
+# BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "BFT")
+# BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "BFT")
 
 BFT_CAT = catalogue.compile(fishery_ranks_data  = BFT_FR,
                            catalogue_data       = BFT_CA,
-                           pretty_print_catches = FALSE)
+                           pretty_print_catches = FALSE, year_from = 2004)
 
 # Creates an empty Excel workbook
 output_workbook = openxlsx2::wb_workbook()
@@ -275,20 +276,20 @@ output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 #### SCRS catalogue for north Atlantic and mediterranean albacore tuna, for the years 2004-2023, as an Excel file
 ```
 # Require access to the iccat.dev.data library (and to the ICCAT databases)
-# ALB_MED_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "MED", year_from = 2004)
-# ALB_MED_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "MED", year_from = 2004) )
+# ALB_MED_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "MED")
+# ALB_MED_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "MED")
 
 ALB_MED_CAT = catalogue.compile(fishery_ranks_data   = ALB_MED_FR,
                                 catalogue_data       = ALB_MED_CA,
-                                pretty_print_catches = TRUE)
+                                pretty_print_catches = TRUE, year_from = 2004)
 
 # Require access to the iccat.dev.data library (and to the ICCAT databases)
-# ALB_ATN_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "ATN", year_from = 2004) 
-# ALB_ATN_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "ATN", year_from = 2004) 
+# ALB_ATN_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "ATN") 
+# ALB_ATN_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "ATN") 
 
 ALB_ATN_CAT = catalogue.compile(fishery_ranks_data   = ALB_ATN_FR,
                                 catalogue_data       = ALB_ATN_CA,
-                                pretty_print_catches = TRUE)
+                                pretty_print_catches = TRUE, year_from = 2004)
 
 # Requires access to the ICCAT dbSTAT database 
 calculate_score = function(stock) { 
