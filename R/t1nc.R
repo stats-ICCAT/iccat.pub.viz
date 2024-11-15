@@ -730,7 +730,8 @@ t1nc.viz.executive_summary.table.all = function(t1nc_data, fill = NA) {
   )
 }
 
-#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables
+#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables
+#' If the original data includes more than one species, the resulting Excel workbook will have a separate tab for each of them.
 #'
 #' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
 #' @param output_file the output Excel file name
@@ -881,8 +882,8 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
   wb$save(output_file)
 }
 
-#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
-#' This version
+#' Produces a standalone Excel file containing the global table of T1 nominal catch data summary for a user-defined species group, as expected in the SCRS executive summary tables.
+#' The resulting Excel workbook will always have a single tab (labelled with the provided \code{species_group_code}) and the distinct species code will appear with their data directly in the table.
 #'
 #' @param t1nc_data T1 nominal catch data as retrieved using the \code{\link{iccat.dev.data::t1nc}} function
 #' @param species_group_code a species group code

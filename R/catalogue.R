@@ -116,7 +116,7 @@ catalogue.viz.table.legend.colours = function() {
 
 #' Produces a _flextable_ containing a formatted SCRS catalogue
 #'
-#' @param catalogue_data the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**
+#' @param catalogue_data the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data** and **iccat.pub.data** libraries
 #' @param show_catches_gradient to enable / disable a color gradients on the cumulative catch column
 #' @param remove_species if the species shall not be included in the stratification
 #' @param remove_stock if the stock shall not be included in the stratification

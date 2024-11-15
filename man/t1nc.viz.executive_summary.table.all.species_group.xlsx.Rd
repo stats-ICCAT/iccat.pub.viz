@@ -2,8 +2,8 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.executive_summary.table.all.species_group.xlsx}
 \alias{t1nc.viz.executive_summary.table.all.species_group.xlsx}
-\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
-This version}
+\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary for a user-defined species group, as expected in the SCRS executive summary tables.
+The resulting Excel workbook will always have a single tab (labelled with the provided \code{species_group_code}) and the distinct species code will appear with their data directly in the table.}
 \usage{
 t1nc.viz.executive_summary.table.all.species_group.xlsx(
   filtered_t1nc_data,
@@ -37,6 +37,6 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(
 nothing, as the Excel file is simply stored at the provided path
 }
 \description{
-Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a group of species** as expected in the SCRS executive summary tables.
-This version
+Produces a standalone Excel file containing the global table of T1 nominal catch data summary for a user-defined species group, as expected in the SCRS executive summary tables.
+The resulting Excel workbook will always have a single tab (labelled with the provided \code{species_group_code}) and the distinct species code will appear with their data directly in the table.
 }

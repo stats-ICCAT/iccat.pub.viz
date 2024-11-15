@@ -2,7 +2,7 @@
 % Please edit documentation in R/stocks.R
 \name{stock.viz.data}
 \alias{stock.viz.data}
-\title{Produces a summary table of the stocks / ssampling areas for one or more species}
+\title{Produces a recap table of the sampling areas available for the stocks of one or more species}
 \usage{
 stock.viz.data(species_codes = NULL)
 }
@@ -13,5 +13,5 @@ stock.viz.data(species_codes = NULL)
 a _flextable_ table summarizing the information by stock
 }
 \description{
-Produces a summary table of the stocks / ssampling areas for one or more species
+Produces a recap table of the sampling areas available for the stocks of one or more species
 }

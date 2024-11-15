@@ -18,7 +18,7 @@ catalogue.viz.table(
 )
 }
 \arguments{
-\item{catalogue_data}{the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data library**}
+\item{catalogue_data}{the SCRS catalogue data as produced using \code{\link{iccat.pub.data::catalogue.compile}}, with T1 nominal catch data and base catalogue data extracted from the ICCAT databases through the **iccat.dev.data** and **iccat.pub.data** libraries}
 
 \item{show_catches_gradient}{to enable / disable a color gradients on the cumulative catch column}
 

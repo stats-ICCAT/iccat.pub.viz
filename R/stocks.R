@@ -38,7 +38,7 @@ stock.viz.summary = function(species_codes = NULL) {
   )
 }
 
-#' Produces a summary table of the stocks / ssampling areas for one or more species
+#' Produces a recap table of the sampling areas available for the stocks of one or more species
 #'
 #' @param species_codes a vector of species codes that have a stock / sampling area assigned
 #' @return a _flextable_ table summarizing the information by stock

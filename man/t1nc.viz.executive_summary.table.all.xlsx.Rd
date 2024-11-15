@@ -2,7 +2,8 @@
 % Please edit documentation in R/t1nc.R
 \name{t1nc.viz.executive_summary.table.all.xlsx}
 \alias{t1nc.viz.executive_summary.table.all.xlsx}
-\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables}
+\title{Produces a standalone Excel file containing the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables
+If the original data includes more than one species, the resulting Excel workbook will have a separate tab for each of them.}
 \usage{
 t1nc.viz.executive_summary.table.all.xlsx(
   t1nc_data,
@@ -30,5 +31,6 @@ t1nc.viz.executive_summary.table.all.xlsx(
 nothing, as the Excel file is simply stored at the provided path
 }
 \description{
-Produces a standalone Excel file containing the global table of T1 nominal catch data summary **for a single species** as expected in the SCRS executive summary tables
+Produces a standalone Excel file containing the global table of T1 nominal catch data summary as expected in the SCRS executive summary tables
+If the original data includes more than one species, the resulting Excel workbook will have a separate tab for each of them.
 }
