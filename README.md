@@ -197,7 +197,7 @@ catalogue.viz.table.legend.colours()
 # ALB_BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 
-# ALB_BFT_CAT = catalogue.compile(fishery_ranks_data = ALB_BFT_FR, catalogue_data = ALB_BFT_CA) # The catalogue.compile function is part of the iccat.pub.data library
+ALB_BFT_CAT = catalogue.compile(fishery_ranks_data = ALB_BFT_FR, catalogue_data = ALB_BFT_CA) # The catalogue.compile function is part of the iccat.pub.data library
 
 catalogue.viz.table(ALB_BFT_CAT)
 ```
@@ -208,9 +208,9 @@ catalogue.viz.table(ALB_BFT_CAT)
 # TEMP_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
 # TEMP_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
 
-# TEMP_CAT = catalogue.compile(fishery_ranks_data = TEMP_FR, catalogue_data = TEMP_CA, remove_species = TRUE, remove_stock = TRUE) # The **catalogue.compile** function is part of the **iccat.pub.data** library
+TEMP_CAT = catalogue.compile(fishery_ranks_data = TEMP_FR, catalogue_data = TEMP_CA, remove_species = TRUE, remove_stock = TRUE) # The **catalogue.compile** function is part of the **iccat.pub.data** library
 
-catalogue.viz.table(ALB_BFT_CAT, remove_species = TRUE, remove_stock = TRUE)
+catalogue.viz.table(TEMP_CAT, remove_species = TRUE, remove_stock = TRUE)
 ```
 ![image](https://github.com/user-attachments/assets/5c74bb2d-3cff-462e-80d8-cab50a40f9aa)
 
