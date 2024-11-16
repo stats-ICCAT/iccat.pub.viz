@@ -159,7 +159,6 @@ t1nc.viz.executive_summary.table.all.xlsx(T1[Species == "ALB" & YearC %in% 1994:
 t1nc.viz.executive_summary.table.all.xlsx(T1[Species %in% c("ALB", "BFT") & YearC %in% 1994:2023], output_file = "./ALB_BFT_1994_2023.xlsx")
 ```
 > Executing the statement above will result in creating the `ALB_BFT_1994_2023.xlsx` file in the session's working directory
-
 ![image](https://github.com/user-attachments/assets/976d140d-2337-4205-b103-63f66ba91a0b)
 ![image](https://github.com/user-attachments/assets/f4877b2b-d73b-4848-8b5c-47ad8b5d0420)
 
@@ -176,7 +175,6 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(T1[Species %in% c("ALB",
                                                         output_file = "./TEMP_1994_2023.xlsx")
 ```
 > Executing the statement above will result in creating the `TEMP_1994_2023.xlsx` file in the session's working directory
-
 ![image](https://github.com/user-attachments/assets/cebfb1fb-0486-40d8-936d-14232949b0bd)
 ![image](https://github.com/user-attachments/assets/3c4ff06e-61ed-498c-a899-8846a70aa0b8)
 
