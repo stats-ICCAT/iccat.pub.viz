@@ -30,7 +30,7 @@ This library is meant for public usage, and for this reason it does not have dep
 + `officer`
 
 ### Installation
-```
+```R
 install.packages(c("data.table", "flextable", "officer"))
 ```
 
@@ -39,7 +39,7 @@ install.packages(c("data.table", "flextable", "officer"))
 + [iccat.pub.aes](https://github.com/stats-ICCAT/iccat.pub.aes)
 
 ### Installation (straight from GitHub)
-```
+```R
 library(devtools)
 
 install_github("stats-ICCAT/iccat.pub.viz")
@@ -60,7 +60,7 @@ or by executing the following statement:
 
 For the examples to work, the following statement should be executed once per session:
 
-```
+```R
 library(iccat.pub.viz)
 ```
 
@@ -70,19 +70,19 @@ library(iccat.pub.viz)
 > All necessary information to visualize stocks' metadata is included in the `iccat.pub.data` library, which is one of the direct dependency of this project.
 
 #### Stock summary table (all species)
-```
+```R
 stock.viz.summary()
 ```
 ![image](https://github.com/user-attachments/assets/ccc06f62-c5a8-492c-bbca-ffc4659ca485)
 
 #### Stock summary table for Albacore tuna and Bluefin tuna
-```
+```R
 stock.viz.summary(species_codes = c("ALB", "BFT"))
 ```
 ![image](https://github.com/user-attachments/assets/fc8c7f40-0a51-417c-a679-f35441f680fc)
 
 #### Stock summary data for Albacore tuna and Bluefin tuna
-```
+```R
 stock.viz.data(species_codes = c("ALB", "BFT"))
 ```
 ![image](https://github.com/user-attachments/assets/2a1667cd-6c61-4787-942b-cb873f10339b)
@@ -90,31 +90,31 @@ stock.viz.data(species_codes = c("ALB", "BFT"))
 ### T1 nominal catch trends
 
 #### Static table legend
-```
+```R
 t1nc.viz.trends.legend()
 ```
 ![image](https://github.com/user-attachments/assets/bfe7a222-2fa8-4587-a793-2d919d182199)
 
 #### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet, species, gear group, stock and catch type
-```
+```R
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023)
 ```
 ![image](https://github.com/user-attachments/assets/68802982-44ef-4a9f-b95c-e4261d9d8d2b)
 
 #### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock 
-```
+```R
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE)
 ```
 ![image](https://github.com/user-attachments/assets/ff63fc57-96b6-4287-bc74-373ddf4bccc5)
 
 #### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, and with catch gradients turned on
-```
+```R
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE, max_cumulative_percentage = .95, rank = TRUE, show_catches_gradient = TRUE)
 ```
 ![image](https://github.com/user-attachments/assets/8cfeba26-d8f6-4f5b-8859-bc52a3a4a3dc)
 
 #### Nominal catch trends of Albacore tuna for the years 1994-2023, stratified by fleet and stock, limited to strata accounting for a cumulative maximum of 95% of total catches, with catch gradients turned on and with sensitivity increased to 50%
-```
+```R
 t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by_species = FALSE, by_stock = TRUE, by_gear = FALSE, by_catch_type = FALSE, rank = TRUE, show_catches_gradient = TRUE, max_cumulative_percentage = .95, sensitivity = .5)
 ```
 ![image](https://github.com/user-attachments/assets/c21a79fe-2543-488a-b5b2-95dcb05bcd73)
@@ -122,32 +122,32 @@ t1nc.viz.trends.table(T1[Species == "ALB"], year_min = 1994, year_max = 2023, by
 ### T1 nominal catch tables
 
 #### Nominal catch SCRS global table for Albacore tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/38f3bc83-1c83-4aac-b7bc-28757fd078cc)
 
 #### Nominal catch SCRS gears table for Albacore tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/5dc02ca5-ac68-4fb3-81d7-4835573f37fd)
 
 #### Nominal catch SCRS CPC table for Albacore tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.CPCs(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/552b6798-5e7a-42bd-8bea-d757e793413e)
 
 #### Nominal catch SCRS full table for Albacore tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.full(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/08a0aaba-cbb8-4718-8cf4-cc21152d4e81)
 ![image](https://github.com/user-attachments/assets/c76cf81c-8b1e-43cd-8b3a-b9c1c593a98c)
 
 #### Nominal catch SCRS Excel output for Albacore tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.all.xlsx(T1[Species == "ALB" & YearC %in% 1994:2023], output_file = "./ALB_1994_2023.xlsx")
 ```
 > Executing the statement above will result in creating the `ALB_1994_2023.xlsx` file in the session's working directory
@@ -155,7 +155,7 @@ t1nc.viz.executive_summary.table.all.xlsx(T1[Species == "ALB" & YearC %in% 1994:
 ![image](https://github.com/user-attachments/assets/d6c40a63-6aaa-46f5-9179-73d018873eba)
 
 #### Nominal catch SCRS Excel output for Albacore and Bluefin tuna (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.all.xlsx(T1[Species %in% c("ALB", "BFT") & YearC %in% 1994:2023], output_file = "./ALB_BFT_1994_2023.xlsx")
 ```
 > Executing the statement above will result in creating the `ALB_BFT_1994_2023.xlsx` file in the session's working directory
@@ -164,7 +164,7 @@ t1nc.viz.executive_summary.table.all.xlsx(T1[Species %in% c("ALB", "BFT") & Year
 ![image](https://github.com/user-attachments/assets/f4877b2b-d73b-4848-8b5c-47ad8b5d0420)
 
 #### Nominal catch SCRS Excel output for temperate tunas (1994-2023)
-```
+```R
 t1nc.viz.executive_summary.table.all.species_group.xlsx(T1[Species %in% c("ALB", "BFT") & YearC %in% 1994:2023],
                                                         species_group_code = "TEMP", 
                                                         species_group_description = 
@@ -183,19 +183,19 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(T1[Species %in% c("ALB",
 ### SCRS catalogues
 
 #### Table legend (textual)
-```
+```R
 catalogue.viz.table.legend()
 ```
 ![image](https://github.com/user-attachments/assets/97083a2a-fe5b-4dc8-ab0e-71c14c0b7e64)
 
 #### Table legend (colors)
-```
+```R
 catalogue.viz.table.legend.colours()
 ```
 ![image](https://github.com/user-attachments/assets/b5318398-c7f5-41dc-ba47-61050cea6da6)
 
 #### SCRS catalogue table for Albacore and Bluefin tuna, for the years 1994-2023, stratified by species, stock, flag, and gear.
-```
+```R
 # ALB_BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 
@@ -206,7 +206,7 @@ catalogue.viz.table(ALB_BFT_CAT)
 ![image](https://github.com/user-attachments/assets/71e4e3b6-c5cd-44d2-9dc2-0117467201a5)
 
 #### SCRS catalogue table for temperate tunas, for the years 1994-2023, stratified by flag and gear.
-```
+```R
 # TEMP_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
 # TEMP_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the **iccat.dev.data** library (and to the ICCAT databases)
 
@@ -217,7 +217,7 @@ catalogue.viz.table(ALB_BFT_CAT, remove_species = TRUE, remove_stock = TRUE)
 ![image](https://github.com/user-attachments/assets/5c74bb2d-3cff-462e-80d8-cab50a40f9aa)
 
 #### SCRS catalogue for albacore and  bluefin tuna, for the years 2004-2023, as an Excel file
-```
+```R
 # Require access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB")
 # ALB_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB")
@@ -274,7 +274,7 @@ output_workbook$save(file = "./TEMP_SCRS_Catalogue.xlsx")
 ![image](https://github.com/user-attachments/assets/5f215ac5-5318-4471-8b8f-b77f28137d94)
 
 #### SCRS catalogue for north Atlantic and mediterranean albacore tuna, for the years 2004-2023, as an Excel file
-```
+```R
 # Require access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_MED_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = "ALB", stock_area_codes = "MED")
 # ALB_MED_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = "ALB", stock_area_codes = "MED")
