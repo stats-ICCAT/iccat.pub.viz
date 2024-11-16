@@ -192,7 +192,7 @@ catalogue.viz.table.legend.colours()
 ```
 ![image](https://github.com/user-attachments/assets/b5318398-c7f5-41dc-ba47-61050cea6da6)
 
-#### SCRS catalogue table for Albacore and Bluefin tuna, for the years 1994-2023, stratified by species, stock, flag, and gear.
+#### SCRS catalogue table for Albacore and Bluefin tuna, for the years 1994-2023, stratified by species, stock, flag, and gear
 ```R
 # ALB_BFT_FR = catalogue.fn_getT1NC_fisheryRanks(species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
 # ALB_BFT_CA = catalogue.fn_genT1NC_CatalSCRS   (species_codes = c("ALB", "BFT"), year_from = 1994) # Requires access to the iccat.dev.data library (and to the ICCAT databases)
