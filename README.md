@@ -42,7 +42,8 @@ install.packages(c("data.table", "flextable", "officer"))
 ```R
 library(devtools)
 
-install_github("stats-ICCAT/iccat.pub.viz", dependencies = TRUE)
+install_github("stats-ICCAT/iccat.pub.data", dependencies = TRUE)
+install_github("stats-ICCAT/iccat.pub.aes", dependencies = TRUE)
 ```
 # Building the library
 
