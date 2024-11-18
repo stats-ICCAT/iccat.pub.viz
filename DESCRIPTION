@@ -4,7 +4,7 @@ Title: ICCAT public visualisation libraries
 Version: 0.1.0
 Author: ICCAT Secretariat
 Maintainer: Fabio Fiorellato <fabio.fiorellato@iccat.int>
-Description: A set of functions and constants to support the production of different types of documents (Excel files, flextables, etc.) for one or more different types of ICCAT datasets.
+Description: A set of functions and constants to support the production of different types of documents (SCRS catalogues, nominal catch trends, nominal catch tables, etc. as excel files or flextables) for one or more different types of ICCAT datasets.
     To produce these documents the actual datasets should be already available to the scripts, as this library does not connect to the ICCAT database to retrieve the needed information.
 License: TBD
 Encoding: UTF-8
