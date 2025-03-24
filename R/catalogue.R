@@ -306,11 +306,11 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
 
   workbook$merge_cells(dims = "A1:G1")
   workbook$add_data(dims = "A1", x = table_description)
-  workbook$add_font(dims = "A1", name = "Calibri", bold = "single")
+  workbook$add_font(dims = "A1", name = "Calibri", bold = TRUE)
 
   workbook$add_data(dims = "A3", x = "Score")
   workbook$add_data(dims = "B3", x = score)
-  workbook$add_font(dims = "A3:B3", name = "Calibri", bold = "single")
+  workbook$add_font(dims = "A3:B3", name = "Calibri", bold = TRUE)
   workbook$add_fill(dims = "A3:B3", color = wb_color(COLOR_SCORE))
 
   workbook$add_numfmt(dims = "B3", numfmt = "#0.00") # Two decimal digits for the score
@@ -339,7 +339,7 @@ catalogue.viz.table.xlsx.append = function(filtered_catalogue_data, workbook, pr
   workbook$add_border(dims = wb_dims(rows = 2, cols = 5:(ncol(filtered_catalogue_data_rev) - 4)),
                       top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
 
-  workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), name = "Calibri", bold = "single")
+  workbook$add_font  (dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)), name = "Calibri", bold = TRUE)
   workbook$add_border(dims = wb_dims(rows = 4, cols = 1:(ncol(filtered_catalogue_data_rev) - 4)),
                 top_border = "thin", bottom_border = "thin", left_border = "", right_border = "")
 

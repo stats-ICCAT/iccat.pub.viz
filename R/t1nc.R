@@ -829,8 +829,8 @@ t1nc.viz.executive_summary.table.all.xlsx = function(t1nc_data, output_file, ver
     wb$set_col_widths(cols = c(1, 4), widths = c(13, 25))
 
     # Formatting header (years)
-    wb$add_font(dims = "A1:A3", bold = "single")
-    wb$add_font(dims = paste0(FIRST_COL, FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1), bold = "single")
+    wb$add_font(dims = "A1:A3", bold = TRUE)
+    wb$add_font(dims = paste0(FIRST_COL, FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1), bold = TRUE)
 
     wb$add_border(dims = paste0("A", FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1),
                   top_border = "thick", bottom_border = "thick",
@@ -1016,8 +1016,8 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx = function(filtered_t1nc
   wb$set_col_widths(cols = c(2, 5), widths = c(13, 25))
 
   # Formatting header (years)
-  wb$add_font(dims = "A1:A3", bold = "single")
-  wb$add_font(dims = paste0(FIRST_COL, FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1), bold = "single")
+  wb$add_font(dims = "A1:A3", bold = TRUE)
+  wb$add_font(dims = paste0(FIRST_COL, FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1), bold = TRUE)
 
   wb$add_border(dims = paste0("A", FIRST_ROW - 1, ":", LAST_COL, FIRST_ROW - 1),
                 top_border = "thick", bottom_border = "thick",
