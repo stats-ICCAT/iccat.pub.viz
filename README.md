@@ -137,7 +137,7 @@ t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:20
 
 #### Nominal catch SCRS gears table for Albacore tuna (1994-2023)
 ```R
-t1nc.viz.executive_summary.table.global(T1[Species == "ALB" & YearC %in% 1994:2023])
+t1nc.viz.executive_summary.table.gears(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/5dc02ca5-ac68-4fb3-81d7-4835573f37fd)
 
@@ -186,7 +186,7 @@ t1nc.viz.executive_summary.table.all.species_group.xlsx(T1[Species %in% c("ALB",
 ![image](https://github.com/user-attachments/assets/cebfb1fb-0486-40d8-936d-14232949b0bd)
 ![image](https://github.com/user-attachments/assets/3c4ff06e-61ed-498c-a899-8846a70aa0b8)
 
-### SCRS catalogues
+ <-. ### SCRS catalogues
 
 #### Table legend (textual)
 ```R
