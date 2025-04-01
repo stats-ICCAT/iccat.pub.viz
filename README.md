@@ -149,7 +149,7 @@ t1nc.viz.executive_summary.table.CPCs(T1[Species == "ALB" & YearC %in% 1994:2023
 
 #### Nominal catch SCRS full table for Albacore tuna (1994-2023)
 ```R
-t1nc.viz.executive_summary.table.full(T1[Species == "ALB" & YearC %in% 1994:2023])
+t1nc.viz.executive_summary.table.all(T1[Species == "ALB" & YearC %in% 1994:2023])
 ```
 ![image](https://github.com/user-attachments/assets/08a0aaba-cbb8-4718-8cf4-cc21152d4e81)
 ![image](https://github.com/user-attachments/assets/c76cf81c-8b1e-43cd-8b3a-b9c1c593a98c)
